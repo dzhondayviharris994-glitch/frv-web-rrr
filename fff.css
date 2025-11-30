@@ -1,0 +1,77 @@
+    body {
+        background-image: url('https://sun9-70.userapi.com/s/v1/ig2/uuN1CGadOQmwCY2or7OdtYP2bEBsc7iuammrWJAS-lyaC3yYusKwbRS2Ou1CSp90FMHWEhKY6CnFUKpyc-AqQtZI.jpg?quality=95&as=32x18,48x27,72x40,108x61,160x90,240x135,360x202,480x270,540x304,640x360,720x405,1080x607,1280x720,1440x810,2560x1440&from=bu&u=QcW86cnjL8xQ4y1TVxYAM6WCJEl5K2vPAG_3JKYyUJw&cs=640x0');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        color: #222;
+        font-family: 'Roboto', Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+    }
+
+    .container {
+        max-width: 900px;
+        margin: 0 auto;
+        background-color: rgba(255,255,255,0);
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 15px rgba(0,0,0,0.3);
+        text-align: center;
+        backdrop-filter: blur(10px)
+    }
+
+    h1 {
+        font-family: 'Pacifico', cursive;
+        color: #8b0000;
+        font-size: 2.5em;
+        margin-bottom: 10px;
+    }
+
+    h2 {
+        font-family: 'Pacifico', cursive;
+        color: Brown;
+        font-size: 2em;
+        margin-top: 30px;
+        margin-bottom: 10px;
+    }
+
+    p.rt {
+        font-family: 'Roboto', Arial, sans-serif;
+        font-size: 1.1em;
+        line-height: 1.5;
+        margin: 10px 0;
+        color: Black;
+    }
+
+    .profile-photo {
+        width: 290px;
+        max-width: 100%;
+        height: auto;
+        border-radius: 50%;
+        margin-top: 20px;
+        border: 3px solid #ccc;
+    }
+
+    .main-image {
+        width: 100%;
+        max-width: 600px;
+        height: auto;
+        margin: 20px 0;
+        border-radius: 10px;
+    }
+
+    .social-buttons {
+        margin-top: 20px;
+    }
+
+    .social-buttons a {
+        display: inline-block;
+        margin: 10px;
+        font-size: 2em;
+        color: #2F4F4F;
+        transition: color 0.3s;
+    }
+
+    .social-buttons a:hover {
+        color: #000;
+    }

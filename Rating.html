@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Рейтинги персонажей</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    font-family: 'Montserrat', sans-serif;
+    background: #121212;
+    color: #ccc;
+    line-height: 1.5;
+    min-height: 100vh;
+    opacity: 0;
+    animation: bodyAppear 1s ease-out forwards;
+  }
+
+  @keyframes bodyAppear {
+    to {
+      opacity: 1;
+    }
+  }
+
+  header {
+    padding: 20px 15px;
+    text-align: center;
+    background: #222;
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  header h1 {
+    margin: 0;
+    font-size: clamp(1.5rem, 5vw, 1.8em);
+    font-weight: 600;
+  }
+
+  .main {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .buttons-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 20px;
+    width: 100%;
+  }
+
+  .toggle-btn {
+    background: linear-gradient(135deg, #4a00e0, #8e2de2);
+    color: #fff;
+    border: none;
+    padding: 14px 16px;
+    border-radius: 8px;
+    font-size: clamp(0.9rem, 3vw, 1em);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    font-weight: 500;
+    flex: 1;
+    min-width: 110px;
+    max-width: 160px;
+    min-height: 50px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .toggle-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    transition: left 0.5s;
+  }
+
+  .toggle-btn:hover::before {
+    left: 100%;
+  }
+
+  .toggle-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+    background: linear-gradient(135deg, #8e2de2, #4a00e0);
+  }
+
+  .toggle-btn.active {
+    background: linear-gradient(135deg, #ff416c, #ff4b2b);
+    box-shadow: 0 4px 12px rgba(255,75,43,0.4);
+    animation: buttonPulse 2s infinite;
+  }
+
+  @keyframes buttonPulse {
+    0%, 100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.05);
+    }
+  }
+
+  .sections-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .section {
+    display: none;
+    background: linear-gradient(135deg, #1e1e1e, #2a2a2a);
+    padding: 20px;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    border: 1px solid #333;
+    animation: sectionSlideIn 0.5s ease;
+  }
+
+  @keyframes sectionSlideIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .section.active {
+    display: block;
+  }
+
+  .section h2 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: clamp(1.3rem, 4vw, 1.5em);
+    color: #ffcc00;
+    border-bottom: 2px solid #444;
+    padding-bottom: 8px;
+    font-weight: 600;
+    text-align: center;
+    animation: titleGlow 3s infinite;
+  }
+
+  @keyframes titleGlow {
+    0%, 100% {
+      text-shadow: 0 0 5px #ffcc00, 0 0 10px #ffcc00;
+    }
+    50% {
+      text-shadow: 0 0 10px #ffcc00, 0 0 20px #ffcc00, 0 0 30px #ffcc00;
+    }
+  }
+
+  .ranking {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .ranking li {
+    padding: 12px 12px;
+    font-size: clamp(1rem, 3vw, 1.1em);
+    border-bottom: 1px solid #333;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    min-height: 50px;
+    animation: itemFadeIn 0.5s ease both;
+  }
+
+  @keyframes itemFadeIn {
+    from {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .ranking li:hover {
+    background-color: rgba(255,255,255,0.05);
+    transform: translateX(5px);
+    animation: itemHover 0.3s ease;
+  }
+
+  @keyframes itemHover {
+    0%, 100% {
+      background-color: rgba(255,255,255,0.05);
+    }
+    50% {
+      background-color: rgba(255,255,255,0.1);
+    }
+  }
+
+  .ranking li:last-child {
+    border-bottom: none;
+  }
+
+  .first-place {
+    font-weight: bold;
+    color: #ffcc00;
+    background: linear-gradient(135deg, rgba(233,30,99,0.1), rgba(255,204,0,0.1));
+    border-radius: 6px;
+    margin-bottom: 5px;
+    animation: goldPulse 2s infinite;
+  }
+
+  @keyframes goldPulse {
+    0%, 100% {
+      box-shadow: 0 0 5px rgba(255,204,0,0.3);
+    }
+    50% {
+      box-shadow: 0 0 15px rgba(255,204,0,0.6);
+    }
+  }
+
+  .second-place {
+    color: #39FF14;
+    font-weight: 500;
+    animation: silverShine 3s infinite;
+  }
+
+  @keyframes silverShine {
+    0%, 100% {
+      text-shadow: 0 0 5px #39FF14;
+    }
+    50% {
+      text-shadow: 0 0 10px #39FF14;
+    }
+  }
+
+  .third-place {
+    color: #cd7f32;
+    font-weight: 500;
+    animation: bronzeGlow 4s infinite;
+  }
+
+  @keyframes bronzeGlow {
+    0%, 100% {
+      text-shadow: 0 0 5px #cd7f32;
+    }
+    50% {
+      text-shadow: 0 0 8px #cd7f32;
+    }
+  }
+
+  .back-button {
+    display: inline-block;
+    padding: 14px 24px;
+    margin: 20px 0 10px;
+    background: linear-gradient(135deg, #4CAF50, #45a049);
+    color: white;
+    font-size: clamp(0.95rem, 3.5vw, 1em);
+    border: none;
+    border-radius: 8px;
+    text-decoration: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    font-weight: 500;
+    text-align: center;
+    width: 100%;
+    max-width: 300px;
+    min-height: 50px;
+    position: relative;
+    overflow: hidden;
+    animation: buttonAppear 1s ease-out 0.5s both;
+  }
+
+  @keyframes buttonAppear {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .back-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    transition: left 0.5s;
+  }
+
+  .back-button:hover::before {
+    left: 100%;
+  }
+
+  .back-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+    background: linear-gradient(135deg, #45a049, #4CAF50);
+  }
+
+  /* Анимации появления элементов списка с задержкой */
+  .ranking li:nth-child(1) { animation-delay: 0.1s; }
+  .ranking li:nth-child(2) { animation-delay: 0.2s; }
+  .ranking li:nth-child(3) { animation-delay: 0.3s; }
+  .ranking li:nth-child(4) { animation-delay: 0.4s; }
+  .ranking li:nth-child(5) { animation-delay: 0.5s; }
+  .ranking li:nth-child(6) { animation-delay: 0.6s; }
+  .ranking li:nth-child(7) { animation-delay: 0.7s; }
+  .ranking li:nth-child(8) { animation-delay: 0.8s; }
+  .ranking li:nth-child(9) { animation-delay: 0.9s; }
+  .ranking li:nth-child(10) { animation-delay: 1s; }
+
+  /* Мобильная адаптация */
+  @media (max-width: 768px) {
+    .main {
+      margin: 15px auto;
+      padding: 10px;
+    }
+
+    .buttons-container {
+      gap: 6px;
+      margin-bottom: 15px;
+    }
+
+    .toggle-btn {
+      padding: 12px 10px;
+      min-width: 90px;
+      max-width: 120px;
+      min-height: 45px;
+      font-size: 0.85rem;
+    }
+
+    .sections-container {
+      gap: 12px;
+    }
+
+    .section {
+      padding: 15px;
+      max-width: 100%;
+    }
+
+    .ranking li {
+      padding: 10px 12px;
+      min-height: 45px;
+    }
+
+    .back-button {
+      margin: 15px 0 10px;
+      padding: 12px 20px;
+      min-height: 45px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    header {
+      padding: 15px 10px;
+    }
+
+    .main {
+      padding: 8px;
+    }
+
+    .buttons-container {
+      gap: 4px;
+    }
+
+    .toggle-btn {
+      min-width: 80px;
+      max-width: 100px;
+      padding: 10px 8px;
+      font-size: 0.8rem;
+      min-height: 40px;
+    }
+
+    .section {
+      padding: 12px;
+    }
+
+    .ranking li {
+      padding: 8px 10px;
+      min-height: 40px;
+      font-size: 0.95rem;
+    }
+
+    .back-button {
+      padding: 12px 18px;
+      min-height: 45px;
+    }
+  }
+
+  @media (max-width: 360px) {
+    .toggle-btn {
+      min-width: 70px;
+      max-width: 85px;
+      padding: 8px 6px;
+      font-size: 0.75rem;
+    }
+
+    .section {
+      padding: 10px;
+    }
+
+    .ranking li {
+      padding: 8px 10px;
+      font-size: 0.9rem;
+    }
+  }
+
+  /* Отключение ховеров для тач-устройств */
+  @media (hover: none) {
+    .toggle-btn:hover {
+      transform: none;
+    }
+
+    .ranking li:hover {
+      transform: none;
+      background-color: transparent;
+    }
+
+    .back-button:hover {
+      transform: none;
+    }
+
+    .toggle-btn:active,
+    .ranking li:active {
+      opacity: 0.7;
+    }
+  }
+
+  a, button {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .toggle-btn:focus,
+  .back-button:focus {
+    outline: 2px solid #8e2de2;
+    outline-offset: 2px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Рейтинги персонажей</h1>
+</header>
+
+<div class="main">
+  <div class="buttons-container">
+    <button class="toggle-btn active" data-target="strength">Сила</button>
+    <button class="toggle-btn" data-target="speed">Скорость</button>
+    <button class="toggle-btn" data-target="intellect">Интеллект</button>
+    <button class="toggle-btn" data-target="creativity">Креативность</button>
+    <button class="toggle-btn" data-target="stamina">Выносливость</button>
+  </div>
+
+  <div class="sections-container">
+    <div id="strength" class="section active">
+      <h2>Сила</h2>
+      <ul class="ranking">
+        <li class="first-place">1. Кто-то</li>
+        <li class="second-place">2. Кто-то</li>
+        <li class="third-place">3. Кто-то</li>
+        <li>4. Кто-то</li>
+        <li>5. Кто-то</li>
+        <li>6. Кто-то</li>
+        <li>7. Кто-то</li>
+        <li>8. Кто-то</li>
+        <li>9. Кто-то</li>
+        <li>10. Кто-то</li>
+      </ul>
+    </div>
+
+    <div id="speed" class="section">
+      <h2>Скорость</h2>
+      <ul class="ranking">
+        <li class="first-place">1. Кто-то</li>
+        <li class="second-place">2. Кто-то</li>
+        <li class="third-place">3. Кто-то</li>
+        <li>4. Кто-то</li>
+        <li>5. Кто-то</li>
+        <li>6. Кто-то</li>
+        <li>7. Кто-то</li>
+        <li>8. Кто-то</li>
+        <li>9. Кто-то</li>
+        <li>10. Кто-то</li>
+      </ul>
+    </div>
+
+    <div id="intellect" class="section">
+      <h2>Интеллект</h2>
+      <ul class="ranking">
+        <li class="first-place">1. Кто-то</li>
+        <li class="second-place">2. Кто-то</li>
+        <li class="third-place">3. Кто-то</li>
+        <li>4. Кто-то</li>
+        <li>5. Кто-то</li>
+        <li>6. Кто-то</li>
+        <li>7. Кто-то</li>
+        <li>8. Кто-то</li>
+        <li>9. Кто-то</li>
+        <li>10. Кто-то</li>
+      </ul>
+    </div>
+
+    <div id="creativity" class="section">
+      <h2>Креативность</h2>
+      <ul class="ranking">
+        <li class="first-place">1. Кто-то</li>
+        <li class="second-place">2. Кто-то</li>
+        <li class="third-place">3. Кто-то</li>
+        <li>4. Кто-то</li>
+        <li>5. Кто-то</li>
+        <li>6. Кто-то</li>
+        <li>7. Кто-то</li>
+        <li>8. Кто-то</li>
+        <li>9. Кто-то</li>
+        <li>10. Кто-то</li>
+      </ul>
+    </div>
+
+    <div id="stamina" class="section">
+      <h2>Выносливость</h2>
+      <ul class="ranking">
+        <li class="first-place">1. Кто-то</li>
+        <li class="second-place">2. Кто-то</li>
+        <li class="third-place">3. Кто-то</li>
+        <li>4. Кто-то</li>
+        <li>5. Кто-то</li>
+        <li>6. Кто-то</li>
+        <li>7. Кто-то</li>
+        <li>8. Кто-то</li>
+        <li>9. Кто-то</li>
+        <li>10. Кто-то</li>
+      </ul>
+    </div>
+  </div>
+
+  <a href="MyUniverse.html" class="back-button">Вернуться назад</a>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var buttons = document.querySelectorAll('.toggle-btn');
+    var sections = document.querySelectorAll('.section');
+
+    function switchSection(targetId) {
+      // Скрываем все секции
+      sections.forEach(function(section) {
+        section.classList.remove('active');
+      });
+
+      // Убираем активный класс со всех кнопок
+      buttons.forEach(function(button) {
+        button.classList.remove('active');
+      });
+
+      // Показываем нужную секцию
+      var targetSection = document.getElementById(targetId);
+      if (targetSection) {
+        targetSection.classList.add('active');
+      }
+
+      // Активируем нужную кнопку
+      var activeButton = document.querySelector('.toggle-btn[data-target="' + targetId + '"]');
+      if (activeButton) {
+        activeButton.classList.add('active');
+      }
+    }
+
+    // Добавляем обработчики для кнопок
+    buttons.forEach(function(button) {
+      button.addEventListener('click', function() {
+        var targetId = this.getAttribute('data-target');
+        switchSection(targetId);
+      });
+    });
+
+    // Обработчик для кнопки назад
+    document.querySelector('.back-button').addEventListener('click', function(e) {
+      e.preventDefault();
+      window.history.back();
+    });
+
+    // Анимация для элементов списка при переключении
+    function animateListItems() {
+      var activeSection = document.querySelector('.section.active');
+      if (activeSection) {
+        var listItems = activeSection.querySelectorAll('.ranking li');
+        listItems.forEach(function(item, index) {
+          item.style.animation = 'none';
+          setTimeout(function() {
+            item.style.animation = `itemFadeIn 0.5s ease ${index * 0.1}s both`;
+          }, 10);
+        });
+      }
+    }
+
+    // Вызываем анимацию при переключении секций
+    buttons.forEach(function(button) {
+      button.addEventListener('click', animateListItems);
+    });
+
+    // Инициализация анимации для первой секции
+    animateListItems();
+  });
+</script>
+
+</body>
+</html>

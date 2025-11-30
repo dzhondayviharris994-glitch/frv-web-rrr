@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Просмотренные тайтлы</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  :root {
+    --primary: #6366f1;
+    --primary-dark: #4f46e5;
+    --bg-dark: #0f0f23;
+    --bg-card: #1a1b2e;
+    --bg-card-hover: #23243d;
+    --text-light: #e2e8f0;
+    --text-muted: #94a3b8;
+    --accent: #8b5cf6;
+    --gradient: linear-gradient(135deg, #6366f1, #8b5cf6);
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg-dark);
+    color: var(--text-light);
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  .container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+
+  .header {
+    text-align: center;
+    margin-bottom: 40px;
+    padding: 60px 20px;
+    background: rgba(255,255,255,0.02);
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.05);
+    animation: fadeIn 0.8s ease;
+  }
+
+  .site-title {
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
+  }
+
+  .subtitle {
+    font-size: 1.3rem;
+    color: var(--text-muted);
+    font-weight: 400;
+  }
+
+  /* Стили для поисковой строки */
+  .search-container {
+    margin: 30px 0;
+    display: flex;
+    justify-content: center;
+    animation: fadeIn 0.8s ease 0.2s both;
+  }
+
+  .search-box {
+    position: relative;
+    width: 100%;
+    max-width: 600px;
+  }
+
+  .search-input {
+    width: 100%;
+    padding: 18px 50px 18px 25px;
+    font-size: 1.1rem;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    color: var(--text-light);
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+  }
+
+  .search-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    background: rgba(255,255,255,0.08);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+    transform: translateY(-2px);
+  }
+
+  .search-input::placeholder {
+    color: var(--text-muted);
+  }
+
+  .search-icon {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    transition: color 0.3s ease;
+  }
+
+  .search-input:focus + .search-icon {
+    color: var(--primary);
+  }
+
+  .search-results {
+    margin-top: 10px;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    text-align: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .search-results.show {
+    opacity: 1;
+  }
+
+  .category-tabs {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+  }
+
+  .category-tab {
+    padding: 15px 30px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    color: var(--text-light);
+    font-weight: 500;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    cursor: pointer;
+    font-size: 1.1rem;
+  }
+
+  .category-tab:hover {
+    background: rgba(255,255,255,0.1);
+    border-color: var(--primary);
+    transform: translateY(-2px);
+  }
+
+  .category-tab.active {
+    background: var(--gradient);
+    border-color: transparent;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+  }
+
+  .content-section {
+    display: none;
+    animation: fadeInUp 0.5s ease;
+  }
+
+  .content-section.active {
+    display: block;
+  }
+
+  .titles-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    margin-bottom: 40px;
+  }
+
+  .title-card {
+    background: var(--bg-card);
+    border-radius: 16px;
+    padding: 25px;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255,255,255,0.05);
+    text-decoration: none;
+    color: var(--text-light);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .title-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+    transition: left 0.7s ease;
+  }
+
+  .title-card:hover {
+    background: var(--bg-card-hover);
+    border-color: var(--primary);
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  }
+
+  .title-card:hover::before {
+    left: 100%;
+  }
+
+  .title-name {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    line-height: 1.4;
+  }
+
+  .title-status {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+
+  .status-soon {
+    color: #f59e0b;
+  }
+
+  .home-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 15px 30px;
+    background: var(--gradient);
+    color: white;
+    text-decoration: none;
+    border-radius: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    margin-bottom: 30px;
+  }
+
+  .home-link:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .section-header {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 30px;
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-align: center;
+  }
+
+  /* Анимации для карточек при фильтрации */
+  .title-card.hidden {
+    display: none;
+  }
+
+  .title-card.visible {
+    animation: cardAppear 0.4s ease;
+  }
+
+  @keyframes cardAppear {
+    from {
+      opacity: 0;
+      transform: scale(0.9) translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .container {
+      padding: 15px;
+    }
+
+    .header {
+      padding: 40px 20px;
+      margin-bottom: 30px;
+    }
+
+    .site-title {
+      font-size: 2.2rem;
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+    }
+
+    .search-input {
+      padding: 15px 45px 15px 20px;
+      font-size: 1rem;
+    }
+
+    .category-tabs {
+      gap: 10px;
+      margin-bottom: 30px;
+    }
+
+    .category-tab {
+      padding: 12px 20px;
+      font-size: 1rem;
+      flex: 1;
+      min-width: 140px;
+      text-align: center;
+    }
+
+    .titles-grid {
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 15px;
+    }
+
+    .title-card {
+      padding: 20px;
+    }
+
+    .title-name {
+      font-size: 1.1rem;
+    }
+
+    .section-header {
+      font-size: 1.6rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .site-title {
+      font-size: 1.8rem;
+    }
+
+    .titles-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .category-tab {
+      min-width: 120px;
+      padding: 10px 15px;
+      font-size: 0.9rem;
+    }
+
+    .search-input {
+      padding: 12px 40px 12px 15px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <h1 class="site-title">ПРОСМОТРЕННЫЕ ТАЙТЛЫ</h1>
+    <p class="subtitle">Моя коллекция аниме, сериалов, фильмов и книг</p>
+  </div>
+
+  <a href="index.html" class="home-link">
+    ← Вернуться на главную
+  </a>
+
+  <!-- Поисковая строка -->
+  <div class="search-container">
+    <div class="search-box">
+      <input type="text" class="search-input" id="searchInput" placeholder="Поиск тайтлов...">
+      <div class="search-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.3-4.3"></path>
+        </svg>
+      </div>
+      <div class="search-results" id="searchResults"></div>
+    </div>
+  </div>
+
+  <div class="category-tabs">
+    <button class="category-tab active" data-category="anime">Аниме</button>
+    <button class="category-tab" data-category="serials">Сериалы</button>
+    <button class="category-tab" data-category="movies">Фильмы</button>
+    <button class="category-tab" data-category="books">Книги</button>
+  </div>
+
+  <!-- Остальной контент без изменений -->
+  <div id="anime" class="content-section active">
+    <h2 class="section-header">Аниме</h2>
+    <div class="titles-grid">
+      <a href="page1.html" class="title-card">
+        <div class="title-name">Бездомный бог</div>
+      </a>
+      <a href="page2.html" class="title-card">
+        <div class="title-name">Твоё имя</div>
+      </a>
+      <a href="page3.html" class="title-card">
+        <div class="title-name">Дитя погоды</div>
+      </a>
+      <a href="page4.html" class="title-card">
+        <div class="title-name">Человек-бензопила</div>
+      </a>
+      <a href="page5.html" class="title-card">
+        <div class="title-name">Фрирен</div>
+      </a>
+      <a href="page6.html" class="title-card">
+        <div class="title-name">Хантер х Хантер</div>
+      </a>
+      <a href="page7.html" class="title-card">
+        <div class="title-name">Форма голоса</div>
+      </a>
+      <a href="page8.html" class="title-card">
+        <div class="title-name">Монолог Фармацевта</div>
+      </a>
+      <a href="page9.html" class="title-card">
+        <div class="title-name">Первородный грех Такопи</div>
+      </a>
+      <a href="page10.html" class="title-card">
+        <div class="title-name">Закрывающая двери Судзумэ</div>
+      </a>
+      <a href="page11.html" class="title-card">
+        <div class="title-name">Клинок рассекающий демонов</div>
+      </a>
+      <a href="page12.html" class="title-card">
+        <div class="title-name">Магическая битва</div>
+      </a>
+      <a href="page13.html" class="title-card">
+        <div class="title-name">Одинокий рокер</div>
+      </a>
+      <a href="page14.html" class="title-card">
+        <div class="title-name">Ковбой бибоп</div>
+      </a>
+      <a href="page15.html" class="title-card">
+        <div class="title-name">Опасность в моём сердце</div>
+      </a>
+      <a href="page16.html" class="title-card">
+        <div class="title-name">Благоухающий цветок</div>
+      </a>
+      <a href="page17.html" class="title-card">
+        <div class="title-name">Необъятный океан</div>
+      </a>
+      <a href="page18.html" class="title-card">
+        <div class="title-name">Ходячий замок</div>
+      </a>
+      <a href="page19.html" class="title-card">
+        <div class="title-name">Соло левелинг</div>
+      </a>
+      <a href="page20.html" class="title-card">
+        <div class="title-name">Тетрадь смерти</div>
+      </a>
+      <a href="page21.html" class="title-card">
+        <div class="title-name">Проза бродячих псов</div>
+      </a>
+      <a href="page22.html" class="title-card">
+        <div class="title-name">Звёздное дитя</div>
+      </a>
+      <a href="page23.html" class="title-card">
+        <div class="title-name">Этот глупый свин не знает мечты девочки</div>
+      </a>
+      <a href="page24.html" class="title-card">
+        <div class="title-name">ДжоДжо</div>
+      </a>
+      <a href="page25.html" class="title-card">
+        <div class="title-name">Евангелион</div>
+      </a>
+      <a href="page26.html" class="title-card">
+        <div class="title-name">Я хочу съесть твою поджелудочную</div>
+      </a>
+      <a href="page27.html" class="title-card">
+        <div class="title-name">Дандадан</div>
+      </a>
+      <a href="page28.html" class="title-card">
+        <div class="title-name">Летнее время</div>
+      </a>
+      <a href="page29.html" class="title-card">
+        <div class="title-name">Обещанный Неверленд</div>
+      </a>
+      <a href="page30.html" class="title-card">
+        <div class="title-name">Семья шпиона</div>
+      </a>
+      <a href="page31.html" class="title-card">
+        <div class="title-name">Эта фарфоровая кукла влюбилась</div>
+      </a>
+      <a href="page32.html" class="title-card">
+        <div class="title-name">Для тебя бессмертный</div>
+      </a>
+      <a href="page33.html" class="title-card">
+        <div class="title-name">Город в котором меня нет</div>
+      </a>
+      <a href="page34.html" class="title-card">
+        <div class="title-name">Кайдзю №8</div>
+      </a>
+      <a href="page35.html" class="title-card">
+        <div class="title-name">Песнь ночных сов</div>
+      </a>
+      <a href="page36.html" class="title-card">
+        <div class="title-name">Дороро</div>
+      </a>
+      <a href="page37.html" class="title-card">
+        <div class="title-name">Дракон горничная Кобояши</div>
+      </a>
+      <a href="page38.html" class="title-card">
+        <div class="title-name">Хоримия</div>
+      </a>
+      <a href="page39.html" class="title-card">
+        <div class="title-name">Блюлок</div>
+      </a>
+      <a href="page40.html" class="title-card">
+        <div class="title-name">Нет игры Нет жизни</div>
+      </a>
+      <a href="page41.html" class="title-card">
+        <div class="title-name">Пираты чёрной лагуны</div>
+      </a>
+      <a href="page42.html" class="title-card">
+        <div class="title-name">Чудачества любви не помеха!</div>
+      </a>
+      <a href="page43.html" class="title-card">
+        <div class="title-name">За гранью</div>
+      </a>
+      <a href="page44.html" class="title-card">
+        <div class="title-name">Слишком много проигравших героинь</div>
+      </a>
+      <a href="page45.html" class="title-card">
+        <div class="title-name">Адский рай</div>
+      </a>
+      <a href="page46.html" class="title-card">
+        <div class="title-name">Унесённые призраками</div>
+      </a>
+      <a href="page47.html" class="title-card">
+        <div class="title-name">Буччигири!</div>
+      </a>
+      <a href="page48.html" class="title-card">
+        <div class="title-name">Эксперименты Лэйн</div>
+      </a>
+      <a href="page49.html" class="title-card">
+        <div class="title-name">Маленький гражданин</div>
+      </a>
+      <a href="page50.html" class="title-card">
+        <div class="title-name">Гачиакута <span class="title-status status-soon">(скоро)</span></div>
+      </a>
+      <a href="page51.html" class="title-card">
+        <div class="title-name">Унеси меня на луну</div>
+      </a>
+      <a href="page52.html" class="title-card">
+        <div class="title-name">У Коми проблемы с общением</div>
+      </a>
+      <a href="page53.html" class="title-card">
+        <div class="title-name">Моя геройская академия</div>
+      </a>
+      <a href="page54.html" class="title-card">
+        <div class="title-name">Рыбка Поньё на утёсе</div>
+      </a>
+      <a href="page55.html" class="title-card">
+        <div class="title-name">Тоннель в лето, выход прощаний</div>
+      </a>
+      <a href="page56.html" class="title-card">
+        <div class="title-name">Дни Сакамото</div>
+      </a>
+      <a href="page57.html" class="title-card">
+        <div class="title-name">Восхождение героя щита</div>
+      </a>
+      <a href="page58.html" class="title-card">
+        <div class="title-name">Ангел по соседству</div>
+      </a>
+      <a href="page59.html" class="title-card">
+        <div class="title-name">Токийские мстители</div>
+      </a>
+      <a href="page60.html" class="title-card">
+        <div class="title-name">Токийский гуль</div>
+      </a>
+      <a href="page61.html" class="title-card">
+        <div class="title-name">Шарлотта</div>
+      </a>
+      <a href="page62.html" class="title-card">
+        <div class="title-name">Труська, Чулка и пресвятой подвяз</div>
+      </a>
+      <a href="page63.html" class="title-card">
+        <div class="title-name">Ветролом</div>
+      </a>
+      <a href="page64.html" class="title-card">
+        <div class="title-name">Ая и ведьма</div>
+      </a>
+      <a href="page65.html" class="title-card">
+        <div class="title-name">Паразит</div>
+      </a>
+      <a href="page66.html" class="title-card">
+        <div class="title-name">Сквозь слёзы я притворяюсь кошкой</div>
+      </a>
+      <a href="page67.html" class="title-card">
+        <div class="title-name">Дьявол может плакать</div>
+      </a>
+      <a href="page68.html" class="title-card">
+        <div class="title-name">Я женился на однокласснице, которую ненавидел</div>
+      </a>
+      <a href="page69.html" class="title-card">
+        <div class="title-name">Приоритет чудо яйца</div>
+      </a>
+      <a href="page70.html" class="title-card">
+        <div class="title-name">Дневник будущего</div>
+      </a>
+      <a href="page71.html" class="title-card">
+        <div class="title-name">Меланхолия Харухи Судзумии</div>
+      </a>
+      <a href="page72.html" class="title-card">
+        <div class="title-name">Санда <span class="title-status status-soon">(скоро)</span></div>
+      </a>
+      <a href="page73.html" class="title-card">
+        <div class="title-name">Можно спросить ещё кое-что? <span class="title-status status-soon">(скоро)</span></div>
+      </a>
+      <a href="page74.html" class="title-card">
+        <div class="title-name">Безэмоциональная Кашивада и эмоциональный Ота <span class="title-status status-soon">(скоро)</span></div>
+      </a>
+      <a href="page75.html" class="title-card">
+        <div class="title-name">Монстр хочет съесть меня <span class="title-status status-soon">(скоро)</span></div>
+      </a>
+      <a href="page76.html" class="title-card">
+        <div class="title-name">Вечность Югурэ <span class="title-status status-soon">(скоро)</span></div>
+      </a>
+    </div>
+  </div>
+
+  <div id="serials" class="content-section">
+    <h2 class="section-header">Сериалы</h2>
+    <div class="titles-grid">
+      <a href="serial1.html" class="title-card">
+        <div class="title-name">Уэйн</div>
+      </a>
+      <a href="serial2.html" class="title-card">
+        <div class="title-name">Слово пацана. Кровь на асфальте</div>
+      </a>
+      <a href="serial3.html" class="title-card">
+        <div class="title-name">Пищеблок</div>
+      </a>
+      <a href="serial4.html" class="title-card">
+        <div class="title-name">Пищеблок 2</div>
+      </a>
+      <a href="serial5.html" class="title-card">
+        <div class="title-name">13 клиническая</div>
+      </a>
+      <a href="serial6.html" class="title-card">
+        <div class="title-name">Предпоследняя инстанция</div>
+      </a>
+      <a href="serial7.html" class="title-card">
+        <div class="title-name">Закрыть гештальт</div>
+      </a>
+      <a href="serial8.html" class="title-card">
+        <div class="title-name">Фишер</div>
+      </a>
+      <a href="serial9.html" class="title-card">
+        <div class="title-name">Кухня</div>
+      </a>
+      <a href="serial10.html" class="title-card">
+        <div class="title-name">Два холма</div>
+      </a>
+      <a href="serial11.html" class="title-card">
+        <div class="title-name">Последний богатырь. Наследие</div>
+      </a>
+      <a href="serial12.html" class="title-card">
+        <div class="title-name">Смешарики</div>
+      </a>
+    </div>
+  </div>
+
+  <div id="movies" class="content-section">
+    <h2 class="section-header">Фильмы</h2>
+    <div class="titles-grid">
+      <a href="movie1.html" class="title-card">
+        <div class="title-name">Люди в чёрном</div>
+      </a>
+      <a href="movie2.html" class="title-card">
+        <div class="title-name">Люди в чёрном 2</div>
+      </a>
+      <a href="movie3.html" class="title-card">
+        <div class="title-name">Люди в чёрном 3</div>
+      </a>
+      <a href="movie4.html" class="title-card">
+        <div class="title-name">Люди в чёрном: Интернешнл</div>
+      </a>
+      <a href="movie5.html" class="title-card">
+        <div class="title-name">Железный человек</div>
+      </a>
+      <a href="movie6.html" class="title-card">
+        <div class="title-name">Железный человек 2</div>
+      </a>
+      <a href="movie7.html" class="title-card">
+        <div class="title-name">Железный человек 3</div>
+      </a>
+      <a href="movie8.html" class="title-card">
+        <div class="title-name">Мстители</div>
+      </a>
+      <a href="movie9.html" class="title-card">
+        <div class="title-name">Мстители: Эра Альтрона</div>
+      </a>
+      <a href="movie10.html" class="title-card">
+        <div class="title-name">Доктор Стрэндж</div>
+      </a>
+      <a href="movie11.html" class="title-card">
+        <div class="title-name">Человек-паук: Возвращение домой</div>
+      </a>
+      <a href="movie12.html" class="title-card">
+        <div class="title-name">Чёрная Пантера</div>
+      </a>
+      <a href="movie13.html" class="title-card">
+        <div class="title-name">Капитан Марвел</div>
+      </a>
+      <a href="movie14.html" class="title-card">
+        <div class="title-name">Мстители: Финал</div>
+      </a>
+      <a href="movie15.html" class="title-card">
+        <div class="title-name">Человек-паук: Вдали от дома</div>
+      </a>
+      <a href="movie16.html" class="title-card">
+        <div class="title-name">Человек-паук: Нет пути домой</div>
+      </a>
+      <a href="movie17.html" class="title-card">
+        <div class="title-name">Доктор Стрэндж: В мультивселенной безумия</div>
+      </a>
+      <a href="movie18.html" class="title-card">
+        <div class="title-name">Стражи Галактики</div>
+      </a>
+      <a href="movie19.html" class="title-card">
+        <div class="title-name">Стражи Галактики 2</div>
+      </a>
+      <a href="movie20.html" class="title-card">
+        <div class="title-name">Стражи Галактики 3</div>
+      </a>
+      <a href="movie21.html" class="title-card">
+        <div class="title-name">Дэдпул и Росомаха</div>
+      </a>
+      <a href="movie22.html" class="title-card">
+        <div class="title-name">Громовержцы*</div>
+      </a>
+      <a href="movie23.html" class="title-card">
+        <div class="title-name">Гарри Поттер и философский камень</div>
+      </a>
+      <a href="movie24.html" class="title-card">
+        <div class="title-name">Гарри Поттер и Тайная комната</div>
+      </a>
+      <a href="movie25.html" class="title-card">
+        <div class="title-name">Гарри Поттер и узник Азкабана</div>
+      </a>
+      <a href="movie26.html" class="title-card">
+        <div class="title-name">Гарри Поттер и Кубок огня</div>
+      </a>
+      <a href="movie27.html" class="title-card">
+        <div class="title-name">Гарри Поттер и Орден Феникса</div>
+      </a>
+      <a href="movie28.html" class="title-card">
+        <div class="title-name">Гарри Поттер и Принц-полукровка</div>
+      </a>
+      <a href="movie29.html" class="title-card">
+        <div class="title-name">Гарри Поттер и Дары смерти: Часть 1</div>
+      </a>
+      <a href="movie30.html" class="title-card">
+        <div class="title-name">Гарри Поттер и Дары смерти: Часть 2</div>
+      </a>
+      <a href="movie31.html" class="title-card">
+        <div class="title-name">Гарри Поттер 20 лет спустя: Возвращение в Хогвартс</div>
+      </a>
+      <a href="movie32.html" class="title-card">
+        <div class="title-name">Человек-паук: Через вселенные</div>
+      </a>
+      <a href="movie33.html" class="title-card">
+        <div class="title-name">Человек-паук: Паутина вселенных</div>
+      </a>
+      <a href="movie34.html" class="title-card">
+        <div class="title-name">Трансформеры</div>
+      </a>
+      <a href="movie35.html" class="title-card">
+        <div class="title-name">Трансформеры 2</div>
+      </a>
+      <a href="movie36.html" class="title-card">
+        <div class="title-name">Трансформеры 3</div>
+      </a>
+      <a href="movie37.html" class="title-card">
+        <div class="title-name">Трансформеры 4</div>
+      </a>
+      <a href="movie38.html" class="title-card">
+        <div class="title-name">Трансформеры 5</div>
+      </a>
+      <a href="movie39.html" class="title-card">
+        <div class="title-name">Трансформеры: Восхождение Звероботов</div>
+      </a>
+      <a href="movie40.html" class="title-card">
+        <div class="title-name">Бамблби</div>
+      </a>
+      <a href="movie41.html" class="title-card">
+        <div class="title-name">Ночь в музее</div>
+      </a>
+      <a href="movie42.html" class="title-card">
+        <div class="title-name">Фантастические твари и где они обитают</div>
+      </a>
+      <a href="movie43.html" class="title-card">
+        <div class="title-name">Пираты Карибского моря: Проклятие Чёрной жемчужины</div>
+      </a>
+      <a href="movie44.html" class="title-card">
+        <div class="title-name">Пираты Карибского моря: Сундук мертвеца</div>
+      </a>
+      <a href="movie45.html" class="title-card">
+        <div class="title-name">Пираты Карибского моря 3: На краю Света</div>
+      </a>
+      <a href="movie46.html" class="title-card">
+        <div class="title-name">Пираты Карибского моря: На странных берегах</div>
+      </a>
+      <a href="movie47.html" class="title-card">
+        <div class="title-name">Пираты Карибского моря: Мертвецы не рассказывают сказки</div>
+      </a>
+      <a href="movie48.html" class="title-card">
+        <div class="title-name">Назад в будущее</div>
+      </a>
+      <a href="movie49.html" class="title-card">
+        <div class="title-name">Назад в будущее 2</div>
+      </a>
+      <a href="movie50.html" class="title-card">
+        <div class="title-name">Шрэк</div>
+      </a>
+      <a href="movie51.html" class="title-card">
+        <div class="title-name">Шрэк 2</div>
+      </a>
+      <a href="movie52.html" class="title-card">
+        <div class="title-name">Шрэк 3</div>
+      </a>
+      <a href="movie53.html" class="title-card">
+        <div class="title-name">Шрэк 4</div>
+      </a>
+      <a href="movie54.html" class="title-card">
+        <div class="title-name">Майнкрафт в кино</div>
+      </a>
+      <a href="movie55.html" class="title-card">
+        <div class="title-name">Лысый нянька: Спецзадание</div>
+      </a>
+      <a href="movie56.html" class="title-card">
+        <div class="title-name">Дети шпионов</div>
+      </a>
+      <a href="movie57.html" class="title-card">
+        <div class="title-name">Соник в кино</div>
+      </a>
+      <a href="movie58.html" class="title-card">
+        <div class="title-name">Соник в кино 2</div>
+      </a>
+      <a href="movie59.html" class="title-card">
+        <div class="title-name">Соник в кино 3</div>
+      </a>
+      <a href="movie60.html" class="title-card">
+        <div class="title-name">Перси Джексон и похититель молний</div>
+      </a>
+      <a href="movie61.html" class="title-card">
+        <div class="title-name">Перси Джексон и Море чудовищ</div>
+      </a>
+      <a href="movie62.html" class="title-card">
+        <div class="title-name">Малефисента</div>
+      </a>
+      <a href="movie63.html" class="title-card">
+        <div class="title-name">Иллюзия обмана</div>
+      </a>
+      <a href="movie64.html" class="title-card">
+        <div class="title-name">Иллюзия обмана 2</div>
+      </a>
+      <a href="movie65.html" class="title-card">
+        <div class="title-name">1+1</div>
+      </a>
+      <a href="movie66.html" class="title-card">
+        <div class="title-name">Третий лишний</div>
+      </a>
+      <a href="movie67.html" class="title-card">
+        <div class="title-name">Зверополис</div>
+      </a>
+      <a href="movie68.html" class="title-card">
+        <div class="title-name">Зверопой</div>
+      </a>
+      <a href="movie69.html" class="title-card">
+        <div class="title-name">Алиса в Стране чудес (2025)</div>
+      </a>
+      <a href="movie70.html" class="title-card">
+        <div class="title-name">Тачки</div>
+      </a>
+      <a href="movie71.html" class="title-card">
+        <div class="title-name">Тачки 2</div>
+      </a>
+      <a href="movie72.html" class="title-card">
+        <div class="title-name">Тачки 3</div>
+      </a>
+      <a href="movie73.html" class="title-card">
+        <div class="title-name">Тайна Коко</div>
+      </a>
+      <a href="movie74.html" class="title-card">
+        <div class="title-name">Как приручить дракона</div>
+      </a>
+      <a href="movie75.html" class="title-card">
+        <div class="title-name">Как приручить дракона 2</div>
+      </a>
+      <a href="movie76.html" class="title-card">
+        <div class="title-name">Как приручить дракона 3</div>
+      </a>
+      <a href="movie77.html" class="title-card">
+        <div class="title-name">Монстры на каникулах</div>
+      </a>
+      <a href="movie78.html" class="title-card">
+        <div class="title-name">Монстры на каникулах 2</div>
+      </a>
+      <a href="movie79.html" class="title-card">
+        <div class="title-name">Монстры на каникулах 3</div>
+      </a>
+      <a href="movie80.html" class="title-card">
+        <div class="title-name">Монстры на каникулах 4</div>
+      </a>
+      <a href="movie81.html" class="title-card">
+        <div class="title-name">Холодное сердце</div>
+      </a>
+      <a href="movie82.html" class="title-card">
+        <div class="title-name">Пять ночей с Фредди</div>
+      </a>
+      <a href="movie83.html" class="title-card">
+        <div class="title-name">Пять ночей с Фредди 2</div>
+      </a>
+      <a href="movie84.html" class="title-card">
+        <div class="title-name">Аватар</div>
+      </a>
+      <a href="movie85.html" class="title-card">
+        <div class="title-name">Аватар: Путь воды</div>
+      </a>
+      <a href="movie86.html" class="title-card">
+        <div class="title-name">Аватар: Пламя и пепел</div>
+      </a>
+      <a href="movie87.html" class="title-card">
+        <div class="title-name">Аватар: Ещё не вышел</div>
+      </a>
+      <a href="movie88.html" class="title-card">
+        <div class="title-name">Бойцовский клуб</div>
+      </a>
+      <a href="movie89.html" class="title-card">
+        <div class="title-name">Субстанция</div>
+      </a>
+      <a href="movie90.html" class="title-card">
+        <div class="title-name">Волк с Уолл-стрит</div>
+      </a>
+      <a href="movie91.html" class="title-card">
+        <div class="title-name">Моана</div>
+      </a>
+      <a href="movie92.html" class="title-card">
+        <div class="title-name">Титаник</div>
+      </a>
+      <a href="movie93.html" class="title-card">
+        <div class="title-name">Холоп</div>
+      </a>
+      <a href="movie94.html" class="title-card">
+        <div class="title-name">Холоп 2</div>
+      </a>
+      <a href="movie95.html" class="title-card">
+        <div class="title-name">Батя</div>
+      </a>
+      <a href="movie96.html" class="title-card">
+        <div class="title-name">Батя 2. Дед</div>
+      </a>
+      <a href="movie97.html" class="title-card">
+        <div class="title-name">Иван Васильевич меняет профессию</div>
+      </a>
+      <a href="movie98.html" class="title-card">
+        <div class="title-name">Бриллиантовая рука</div>
+      </a>
+      <a href="movie99.html" class="title-card">
+        <div class="title-name">Кракен</div>
+      </a>
+      <a href="movie100.html" class="title-card">
+        <div class="title-name">Сто лет тому вперёд</div>
+      </a>
+      <a href="movie101.html" class="title-card">
+        <div class="title-name">Приключения Электроника</div>
+      </a>
+      <a href="movie102.html" class="title-card">
+        <div class="title-name">Лулу и Бриггс</div>
+      </a>
+      <a href="movie103.html" class="title-card">
+        <div class="title-name">Маска</div>
+      </a>
+      <a href="movie104.html" class="title-card">
+        <div class="title-name">Приключения Падингтона</div>
+      </a>
+      <a href="movie105.html" class="title-card">
+        <div class="title-name">Приключения Падингтона 2</div>
+      </a>
+      <a href="movie106.html" class="title-card">
+        <div class="title-name">Каратэ-пацан</div>
+      </a>
+      <a href="movie107.html" class="title-card">
+        <div class="title-name">Большой и добрый великан</div>
+      </a>
+      <a href="movie108.html" class="title-card">
+        <div class="title-name">Тролли</div>
+      </a>
+      <a href="movie109.html" class="title-card">
+        <div class="title-name">Тролли 2</div>
+      </a>
+      <a href="movie110.html" class="title-card">
+        <div class="title-name">Тролли 3</div>
+      </a>
+      <a href="movie111.html" class="title-card">
+        <div class="title-name">Чарли и шоколадная фабрика</div>
+      </a>
+      <a href="movie112.html" class="title-card">
+        <div class="title-name">Джуманджи</div>
+      </a>
+      <a href="movie113.html" class="title-card">
+        <div class="title-name">Кролик Питер</div>
+      </a>
+      <a href="movie114.html" class="title-card">
+        <div class="title-name">Кролик Питер 2</div>
+      </a>
+      <a href="movie115.html" class="title-card">
+        <div class="title-name">Покемон. Детектив Пикачу</div>
+      </a>
+      <a href="movie116.html" class="title-card">
+        <div class="title-name">Живая сталь</div>
+      </a>
+      <a href="movie117.html" class="title-card">
+        <div class="title-name">Рождественская история</div>
+      </a>
+      <a href="movie118.html" class="title-card">
+        <div class="title-name">Годзилла</div>
+      </a>
+      <a href="movie119.html" class="title-card">
+        <div class="title-name">Конг: Остров Черепа</div>
+      </a>
+      <a href="movie120.html" class="title-card">
+        <div class="title-name">Годзилла 2: Король монстра</div>
+      </a>
+      <a href="movie121.html" class="title-card">
+        <div class="title-name">Годзилла против Конга</div>
+      </a>
+      <a href="movie122.html" class="title-card">
+        <div class="title-name">Годзилла и конг: Новая империя</div>
+      </a>
+      <a href="movie123.html" class="title-card">
+        <div class="title-name">Оно</div>
+      </a>
+      <a href="movie124.html" class="title-card">
+        <div class="title-name">Оно 2</div>
+      </a>
+      <a href="movie125.html" class="title-card">
+        <div class="title-name">Первому игроку приготовиться</div>
+      </a>
+      <a href="movie126.html" class="title-card">
+        <div class="title-name">Веном</div>
+      </a>
+      <a href="movie127.html" class="title-card">
+        <div class="title-name">Веном 2</div>
+      </a>
+      <a href="movie128.html" class="title-card">
+        <div class="title-name">Веном 3</div>
+      </a>
+      <a href="movie129.html" class="title-card">
+        <div class="title-name">Дэдпул</div>
+      </a>
+      <a href="movie130.html" class="title-card">
+        <div class="title-name">Дэдпул 2</div>
+      </a>
+      <a href="movie131.html" class="title-card">
+        <div class="title-name">Война миров Z</div>
+      </a>
+      <a href="movie132.html" class="title-card">
+        <div class="title-name">Гадки я</div>
+      </a>
+      <a href="movie133.html" class="title-card">
+        <div class="title-name">Гадки я 2</div>
+      </a>
+      <a href="movie134.html" class="title-card">
+        <div class="title-name">Гадки я 3</div>
+      </a>
+      <a href="movie135.html" class="title-card">
+        <div class="title-name">Гадки я 4</div>
+      </a>
+      <a href="movie136.html" class="title-card">
+        <div class="title-name">RRR: Рядом Ревёт Революция</div>
+      </a>
+      <a href="movie137.html" class="title-card">
+        <div class="title-name">Шоу Трумана</div>
+      </a>
+      <a href="movie138.html" class="title-card">
+        <div class="title-name">Американский огурчик</div>
+      </a>
+      <a href="movie139.html" class="title-card">
+        <div class="title-name">Тихоокеанский рубеж</div>
+      </a>
+      <a href="movie140.html" class="title-card">
+        <div class="title-name">Тихоокеанский рубеж 2</div>
+      </a>
+      <a href="movie141.html" class="title-card">
+        <div class="title-name">Морбиус</div>
+      </a>
+    </div>
+  </div>
+
+  <div id="books" class="content-section">
+    <h2 class="section-header">Книги</h2>
+    <div class="titles-grid">
+      <div class="title-card" style="pointer-events: none; opacity: 0.7;">
+        <div class="title-name">Пока нет книг в коллекции</div>
+        <div class="title-status">Раздел в разработке</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const categoryTabs = document.querySelectorAll('.category-tab');
+    const contentSections = document.querySelectorAll('.content-section');
+    const searchInput = document.getElementById('searchInput');
+    const searchResults = document.getElementById('searchResults');
+    let allTitleCards = [];
+
+    // Собираем все карточки для поиска
+    function collectAllTitles() {
+      allTitleCards = document.querySelectorAll('.title-card');
+    }
+
+    // Функция поиска
+    function performSearch(searchTerm) {
+      if (searchTerm.length < 2) {
+        // Показываем все карточки, если поисковый запрос короткий
+        allTitleCards.forEach(card => {
+          card.classList.remove('hidden');
+          card.classList.add('visible');
+        });
+        searchResults.classList.remove('show');
+        return;
+      }
+
+      const lowerSearchTerm = searchTerm.toLowerCase();
+      let foundCount = 0;
+
+      allTitleCards.forEach(card => {
+        const titleText = card.querySelector('.title-name').textContent.toLowerCase();
+
+        if (titleText.includes(lowerSearchTerm)) {
+          card.classList.remove('hidden');
+          card.classList.add('visible');
+          foundCount++;
+        } else {
+          card.classList.add('hidden');
+          card.classList.remove('visible');
+        }
+      });
+
+      // Показываем результаты поиска
+      if (foundCount > 0) {
+        searchResults.textContent = `Найдено тайтлов: ${foundCount}`;
+        searchResults.classList.add('show');
+      } else {
+        searchResults.textContent = 'По вашему запросу ничего не найдено';
+        searchResults.classList.add('show');
+      }
+    }
+
+    // Обработчик ввода в поисковую строку
+    searchInput.addEventListener('input', function() {
+      performSearch(this.value);
+    });
+
+    // Обработчики для табов категорий
+    categoryTabs.forEach(tab => {
+      tab.addEventListener('click', function() {
+        const category = this.dataset.category;
+
+        // Убираем активный класс у всех табов
+        categoryTabs.forEach(t => t.classList.remove('active'));
+        // Добавляем активный класс текущему табу
+        this.classList.add('active');
+
+        // Скрываем все секции
+        contentSections.forEach(section => {
+          section.classList.remove('active');
+        });
+
+        // Показываем нужную секцию
+        document.getElementById(category).classList.add('active');
+
+        // Сбрасываем поиск при переключении категории
+        searchInput.value = '';
+        searchResults.classList.remove('show');
+
+        // Показываем все карточки в активной категории
+        allTitleCards.forEach(card => {
+          card.classList.remove('hidden');
+          card.classList.add('visible');
+        });
+      });
+    });
+
+    // Инициализация
+    collectAllTitles();
+  });
+</script>
+
+</body>
+</html>

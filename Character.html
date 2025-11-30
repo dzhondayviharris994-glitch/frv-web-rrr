@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Персонажи - Моя Вселенная</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Montserrat', sans-serif;
+  background: linear-gradient(135deg, #0c0c0c, #1a1a2e, #16213e);
+  background-size: 400% 400%;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  padding: 15px;
+  line-height: 1.5;
+  animation: gradientShift 15s ease infinite;
+}
+
+@keyframes gradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+h1 {
+  font-size: 2.2em;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  text-shadow: 2px 2px 8px rgba(0,0,0,0.7);
+  letter-spacing: 1px;
+  animation: titlePulse 3s ease-in-out infinite, textShine 4s ease-in-out infinite;
+  text-align: center;
+  font-weight: 600;
+  background: linear-gradient(45deg, #8e2de2, #4a00e0, #00c6ff);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+@keyframes titlePulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+@keyframes textShine {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+.menu {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+  justify-content: center;
+  width: 100%;
+  max-width: 800px;
+  animation: menuSlideIn 0.8s ease-out 0.3s both;
+}
+
+@keyframes menuSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.menu button {
+  background: linear-gradient(135deg, #74ebd5, #ACB6E5);
+  border: none;
+  padding: 12px 20px;
+  font-size: 1.1em;
+  border-radius: 10px;
+  cursor: pointer;
+  color: black;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  font-weight: 500;
+  flex: 1;
+  min-width: 140px;
+  max-width: 180px;
+  position: relative;
+  overflow: hidden;
+  animation: buttonPopIn 0.6s ease-out both;
+}
+
+.menu button:nth-child(1) { animation-delay: 0.4s; }
+.menu button:nth-child(2) { animation-delay: 0.5s; }
+.menu button:nth-child(3) { animation-delay: 0.6s; }
+.menu button:nth-child(4) { animation-delay: 0.7s; }
+.menu button:nth-child(5) { animation-delay: 0.8s; }
+.menu button:nth-child(6) { animation-delay: 0.9s; }
+
+@keyframes buttonPopIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.8) translateY(20px);
+  }
+  70% {
+    transform: scale(1.05) translateY(-5px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.menu button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  transition: left 0.6s ease;
+}
+
+.menu button:hover::before {
+  left: 100%;
+}
+
+.menu button:hover {
+  background: linear-gradient(135deg, #ff6a00, #ee0979);
+  transform: translateY(-5px) scale(1.05);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+  color: white;
+}
+
+.menu button.active {
+  background: linear-gradient(135deg, #ff416c, #ff4b2b);
+  color: white;
+  animation: activeButtonPulse 2s ease-in-out infinite;
+}
+
+@keyframes activeButtonPulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 6px 15px rgba(255, 75, 43, 0.5);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 8px 20px rgba(255, 75, 43, 0.7);
+  }
+}
+
+.characters-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 800px;
+  gap: 15px;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.8s ease-out 0.6s forwards;
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.section-title {
+  font-size: 1.7em;
+  margin-top: 15px;
+  margin-bottom: 10px;
+  text-align: center;
+  color: #ddd;
+  text-shadow: 1px 1px 4px rgba(0,0,0,0.5);
+  font-weight: 600;
+  animation: titleGlow 3s ease-in-out infinite;
+}
+
+@keyframes titleGlow {
+  0%, 100% {
+    text-shadow: 0 0 10px rgba(142, 45, 226, 0.5);
+  }
+  50% {
+    text-shadow: 0 0 20px rgba(142, 45, 226, 0.8), 0 0 30px rgba(142, 45, 226, 0.6);
+  }
+}
+
+.character-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.character {
+  padding: 12px 18px;
+  background: linear-gradient(135deg, #f093fb, #f5576c);
+  border-radius: 8px;
+  font-size: 1.1em;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  font-weight: 500;
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  animation: characterSlideIn 0.5s ease-out both;
+}
+
+.character:nth-child(1) { animation-delay: 0.1s; }
+.character:nth-child(2) { animation-delay: 0.2s; }
+.character:nth-child(3) { animation-delay: 0.3s; }
+.character:nth-child(4) { animation-delay: 0.4s; }
+.character:nth-child(5) { animation-delay: 0.5s; }
+.character:nth-child(6) { animation-delay: 0.6s; }
+
+@keyframes characterSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.character::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.6s ease;
+}
+
+.character:hover::before {
+  left: 100%;
+}
+
+.character:hover {
+  background: linear-gradient(135deg, #00f2fe, #4facfe);
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+}
+
+.character.empty {
+  background: linear-gradient(135deg, #555, #777);
+  color: #999;
+  cursor: not-allowed;
+  animation: emptyPulse 4s ease-in-out infinite;
+}
+
+@keyframes emptyPulse {
+  0%, 100% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+.character.empty:hover {
+  background: linear-gradient(135deg, #555, #777);
+  transform: none;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.character.empty::before {
+  display: none;
+}
+
+.modal {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+  z-index: 1000;
+  padding: 20px;
+  backdrop-filter: blur(5px);
+}
+
+.modal.active {
+  opacity: 1;
+  pointer-events: auto;
+  animation: modalAppear 0.5s ease-out;
+}
+
+@keyframes modalAppear {
+  from {
+    opacity: 0;
+    backdrop-filter: blur(0px);
+  }
+  to {
+    opacity: 1;
+    backdrop-filter: blur(5px);
+  }
+}
+
+.modal-content {
+  background: linear-gradient(135deg, #1e1e1e, #2a2a2a);
+  padding: 25px;
+  border-radius: 15px;
+  max-width: 500px;
+  width: 100%;
+  color: #fff;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.8);
+  position: relative;
+  border: 2px solid rgba(255,255,255,0.1);
+  animation: modalSlideUp 0.5s ease-out;
+}
+
+@keyframes modalSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(50px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.modal-close {
+  position: absolute;
+  top: 10px; right: 15px;
+  font-size: 1.8em;
+  cursor: pointer;
+  color: #aaa;
+  transition: all 0.3s ease;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  animation: closeRotate 0.5s ease-out;
+}
+
+@keyframes closeRotate {
+  from {
+    transform: rotate(-180deg);
+    opacity: 0;
+  }
+  to {
+    transform: rotate(0);
+    opacity: 1;
+  }
+}
+
+.modal-close:hover {
+  color: #fff;
+  background: rgba(255,255,255,0.1);
+  transform: rotate(90deg);
+}
+
+.back-button {
+  display: inline-block;
+  padding: 12px 24px;
+  margin: 15px 0 5px;
+  background: linear-gradient(135deg, #4CAF50, #45a049);
+  color: white;
+  font-size: 1em;
+  border: none;
+  border-radius: 8px;
+  text-decoration: none;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  font-weight: 500;
+  text-align: center;
+  width: 100%;
+  max-width: 200px;
+  position: relative;
+  overflow: hidden;
+  animation: buttonAppear 0.8s ease-out 0.8s both;
+}
+
+@keyframes buttonAppear {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.back-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.6s ease;
+}
+
+.back-button:hover::before {
+  left: 100%;
+}
+
+.back-button:hover {
+  background: linear-gradient(135deg, #45a049, #4CAF50);
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+}
+
+/* Парящие частицы на фоне */
+.floating-particles {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.particle {
+  position: absolute;
+  background: rgba(255,255,255,0.1);
+  border-radius: 50%;
+  animation: float 20s infinite linear;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(100vh) translateX(0) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.5;
+  }
+  90% {
+    opacity: 0.5;
+  }
+  100% {
+    transform: translateY(-100px) translateX(100px) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  body {
+    padding: 10px;
+  }
+
+  h1 {
+    font-size: 1.8em;
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+
+  .menu {
+    gap: 8px;
+    margin-bottom: 15px;
+  }
+
+  .menu button {
+    padding: 10px 15px;
+    font-size: 1em;
+    min-width: 120px;
+    max-width: 160px;
+    flex: 0 1 calc(50% - 8px);
+  }
+
+  .section-title {
+    font-size: 1.4em;
+  }
+
+  .character {
+    padding: 10px 15px;
+    font-size: 1em;
+    min-height: 45px;
+  }
+
+  .modal-content {
+    padding: 20px;
+    margin: 10px;
+  }
+
+  .back-button {
+    padding: 10px 20px;
+    font-size: 0.95em;
+    max-width: 180px;
+  }
+}
+
+@media (max-width: 480px) {
+  h1 {
+    font-size: 1.6em;
+  }
+
+  .menu button {
+    padding: 8px 12px;
+    font-size: 0.9em;
+    min-width: 110px;
+    max-width: 140px;
+    flex: 0 1 calc(50% - 6px);
+  }
+
+  .section-title {
+    font-size: 1.3em;
+  }
+
+  .character {
+    padding: 8px 12px;
+    font-size: 0.95em;
+    min-height: 42px;
+  }
+
+  .modal-content {
+    padding: 15px;
+  }
+
+  .modal-close {
+    top: 8px;
+    right: 12px;
+    font-size: 1.6em;
+  }
+
+  .back-button {
+    padding: 10px 18px;
+    font-size: 0.9em;
+    max-width: 170px;
+  }
+}
+
+@media (hover: none) {
+  .menu button:hover {
+    transform: none;
+  }
+
+  .character:hover {
+    transform: none;
+  }
+
+  .back-button:hover {
+    transform: none;
+  }
+
+  .modal-close:hover {
+    transform: none;
+    background: transparent;
+  }
+
+  .menu button:active,
+  .character:active,
+  .back-button:active {
+    opacity: 0.7;
+  }
+}
+
+a, button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.menu button:focus,
+.character:focus,
+.back-button:focus,
+.modal-close:focus {
+  outline: 2px solid #74ebd5;
+  outline-offset: 2px;
+}
+</style>
+</head>
+<body>
+
+<!-- Парящие частицы -->
+<div class="floating-particles" id="particles"></div>
+
+<h1>Персонажи</h1>
+
+<div class="menu">
+  <button data-faction="objects" class="active">Объекты</button>
+  <button data-faction="humans">Обычные люди</button>
+  <button data-faction="orgN">Организация N</button>
+  <button data-faction="orgA">Организация А</button>
+  <button data-faction="orgDNA">Организация ДНК</button>
+  <button data-faction="abs">АБСОЛЮТЫ</button>
+</div>
+
+<div class="characters-container" id="charactersContainer">
+</div>
+
+<a href="MyUniverse.html" class="back-button">Вернуться назад</a>
+
+<div class="modal" id="characterModal">
+  <div class="modal-content">
+    <div class="modal-close" id="closeModal">&times;</div>
+    <h2 id="characterName">Имя Персонажа</h2>
+    <p id="characterKOB">Краткое описание внешности персонажа...</p>
+    <p id="characterDesc">Описание персонажа...</p>
+  </div>
+</div>
+
+<script>
+// Создание парящих частиц
+function createParticles() {
+  const particlesContainer = document.getElementById('particles');
+  const particleCount = 15;
+
+  for (let i = 0; i < particleCount; i++) {
+    const particle = document.createElement('div');
+    particle.className = 'particle';
+
+    const size = Math.random() * 3 + 1;
+    const posX = Math.random() * 100;
+    const delay = Math.random() * 20;
+    const duration = Math.random() * 10 + 20;
+
+    particle.style.width = `${size}px`;
+    particle.style.height = `${size}px`;
+    particle.style.left = `${posX}%`;
+    particle.style.animationDelay = `${delay}s`;
+    particle.style.animationDuration = `${duration}s`;
+    particle.style.background = `rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 0.1)`;
+
+    particlesContainer.appendChild(particle);
+  }
+}
+
+const data = {
+  objects: [
+    { name: "Демиург(Объект 1)", KOB: "КОВ:", description: "Описание:" },
+    { name: "", KOB: "КОВ:", description: "Описание:" },
+    { name: "", KOB: "КОВ:", description: "Описание:" },
+    { name: "", KOB: "КОВ:", description: "Описание:" },
+    { name: "", KOB: "КОВ:", description: "Описание:" },
+    { name: "", KOB: "КОВ:", description: "Описание:" },
+  ],
+  humans: [
+    { name: "", KOB: "КОВ:", description: "Описание:" },
+    { name: "", KOB: "КОВ:", description: "Описание:" },
+  ],
+  orgN: [
+    { name: "", KOB: "КОВ:", description: "Описание:" },
+    { name: "", KOB: "КОВ:", description: "Описание:" },
+  ],
+  orgA: [
+    { name: "", KOB: "КОВ:", description: "Описание:" },
+    { name: "", KOB: "КОВ:", description: "Описание:" },
+  ],
+  orgDNA: [
+    { name: "", KOB: "КОВ:", description: "Описание:" },
+    { name: "", KOB: "КОВ:", description: "Описание:" },
+  ],
+  abs: [
+    { name: "", KOB: "КОВ:", description: "Описание:" },
+    { name: "", KOB: "КОВ:", description: "Описание:" },
+    { name: "", KOB: "КОВ:", description: "Описание:" },
+  ]
+};
+
+const container = document.getElementById('charactersContainer');
+const modal = document.getElementById('characterModal');
+const modalName = document.getElementById('characterName');
+const modalKOB = document.getElementById('characterKOB');
+const modalDesc = document.getElementById('characterDesc');
+const closeModalBtn = document.getElementById('closeModal');
+
+closeModalBtn.onclick = function() {
+  modal.classList.remove('active');
+}
+
+modal.onclick = function(e) {
+  if (e.target === modal) {
+    modal.classList.remove('active');
+  }
+}
+
+function showCharacters(faction) {
+  container.style.opacity = '0';
+  container.style.transform = 'translateY(20px)';
+
+  setTimeout(() => {
+    container.innerHTML = '';
+    const list = data[faction];
+    if (!list) return;
+
+    const title = document.createElement('div');
+    title.className = 'section-title';
+    title.textContent = getFactionTitle(faction);
+    container.appendChild(title);
+
+    const charList = document.createElement('div');
+    charList.className = 'character-list';
+
+    list.forEach(function(p, index) {
+      if (!p.name.trim()) {
+        const charDiv = document.createElement('div');
+        charDiv.className = 'character empty';
+        charDiv.textContent = 'Персонаж не добавлен';
+        charList.appendChild(charDiv);
+      } else {
+        const charDiv = document.createElement('div');
+        charDiv.className = 'character';
+        charDiv.textContent = p.name;
+        charDiv.style.animationDelay = `${0.1 + index * 0.1}s`;
+        charDiv.onclick = function() {
+          showCharacterDetails(p);
+        };
+        charList.appendChild(charDiv);
+      }
+    });
+
+    container.appendChild(charList);
+    container.style.opacity = '1';
+    container.style.transform = 'translateY(0)';
+  }, 300);
+}
+
+function getFactionTitle(faction) {
+  const titles = {
+    'objects': 'Объекты',
+    'humans': 'Обычные люди',
+    'orgN': 'Организация N',
+    'orgA': 'Организация А',
+    'orgDNA': 'Организация ДНК',
+    'abs': 'АБСОЛЮТЫ'
+  };
+  return titles[faction] || '';
+}
+
+document.querySelectorAll('.menu button').forEach(function(btn) {
+  btn.onclick = function() {
+    const faction = btn.getAttribute('data-faction');
+
+    document.querySelectorAll('.menu button').forEach(function(b) {
+      b.classList.remove('active');
+    });
+    btn.classList.add('active');
+
+    showCharacters(faction);
+  };
+});
+
+showCharacters('objects');
+
+function showCharacterDetails(character) {
+  modalName.textContent = character.name;
+  modalKOB.textContent = character.KOB;
+  modalDesc.textContent = character.description;
+  modal.classList.add('active');
+}
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape' && modal.classList.contains('active')) {
+    modal.classList.remove('active');
+  }
+});
+
+// Инициализация при загрузке
+window.addEventListener('load', function() {
+  createParticles();
+});
+</script>
+
+</body>
+</html>

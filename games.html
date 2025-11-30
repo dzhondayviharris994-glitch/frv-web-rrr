@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Игровая коллекция</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  :root {
+    --primary: #6366f1;
+    --primary-dark: #4f46e5;
+    --bg-dark: #0f0f23;
+    --bg-card: #1a1b2e;
+    --bg-card-hover: #23243d;
+    --text-light: #e2e8f0;
+    --text-muted: #94a3b8;
+    --accent: #8b5cf6;
+    --gradient: linear-gradient(135deg, #6366f1, #8b5cf6);
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg-dark);
+    color: var(--text-light);
+    min-height: 100vh;
+    padding: 20px;
+    line-height: 1.6;
+  }
+
+  .container {
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .header {
+    text-align: center;
+    margin-bottom: 40px;
+    padding: 40px 20px;
+    background: rgba(255,255,255,0.02);
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .site-title {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
+  }
+
+  .subtitle {
+    font-size: 1.2rem;
+    color: var(--text-muted);
+    margin-bottom: 30px;
+    font-weight: 400;
+  }
+
+  .navigation {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .nav-btn {
+    padding: 12px 24px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    color: var(--text-light);
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+  }
+
+  .nav-btn:hover {
+    background: rgba(255,255,255,0.1);
+    border-color: var(--primary);
+    transform: translateY(-2px);
+  }
+
+  .nav-btn.active {
+    background: var(--gradient);
+    border-color: transparent;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+  }
+
+  .content-section {
+    display: none;
+    animation: fadeIn 0.5s ease;
+  }
+
+  .content-section.active {
+    display: block;
+  }
+
+  .stats-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding: 20px;
+    background: rgba(255,255,255,0.02);
+    border-radius: 15px;
+  }
+
+  .total-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 30px;
+  }
+
+  .stat-card {
+    background: var(--bg-card);
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+    border: 1px solid rgba(255,255,255,0.05);
+    transition: all 0.3s ease;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--primary);
+  }
+
+  .stat-number {
+    font-size: 2rem;
+    font-weight: 700;
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 5px;
+  }
+
+  .stat-label {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+  }
+
+  .games-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    margin-bottom: 40px;
+  }
+
+  .game-card {
+    background: var(--bg-card);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255,255,255,0.05);
+    position: relative;
+  }
+
+  .game-card:hover {
+    transform: translateY(-5px);
+    background: var(--bg-card-hover);
+    border-color: var(--primary);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  }
+
+  .game-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: var(--gradient);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    z-index: 2;
+  }
+
+  .game-cover {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .game-info {
+    padding: 20px;
+  }
+
+  .game-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: var(--text-light);
+  }
+
+  .game-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+  }
+
+  .game-time {
+    color: var(--primary);
+    font-weight: 600;
+  }
+
+  .game-price {
+    color: #10b981;
+    font-weight: 600;
+  }
+
+  .game-last-played {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    margin-top: 5px;
+  }
+
+  .progress-bar {
+    width: 100%;
+    height: 4px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 2px;
+    margin-top: 10px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--gradient);
+    border-radius: 2px;
+    transition: width 0.3s ease;
+  }
+
+  .wishlist-header {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+
+  .steam-trade {
+    display: inline-block;
+    padding: 12px 24px;
+    background: var(--gradient);
+    color: white;
+    text-decoration: none;
+    border-radius: 10px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    margin-bottom: 30px;
+  }
+
+  .steam-trade:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .category-filters {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+  }
+
+  .filter-btn {
+    padding: 8px 16px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    color: var(--text-light);
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .filter-btn.active {
+    background: var(--gradient);
+    border-color: transparent;
+  }
+
+  @media (max-width: 768px) {
+    .site-title {
+      font-size: 2rem;
+    }
+
+    .games-grid {
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 15px;
+    }
+
+    .stats-header {
+      flex-direction: column;
+      gap: 15px;
+      text-align: center;
+    }
+
+    .total-stats {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 480px) {
+    body {
+      padding: 10px;
+    }
+
+    .games-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .total-stats {
+      grid-template-columns: 1fr;
+    }
+
+    .site-title {
+      font-size: 1.8rem;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1 class="site-title">ИГРОВАЯ КОЛЛЕКЦИЯ</h1>
+    <p class="subtitle">Мои достижения, статистика и желаемые игры</p>
+    <div class="navigation">
+      <a href="index.html" class="nav-btn">Главная</a>
+      <button class="nav-btn active" data-tab="stats">Моя статистика</button>
+      <button class="nav-btn" data-tab="wishlist">Список желаемого</button>
+    </div>
+  </div>
+
+  <div id="stats" class="content-section active">
+    <div class="stats-header">
+      <h2>Обзор игровой активности</h2>
+      <div class="category-filters">
+        <button class="filter-btn active" data-filter="all">Все игры</button>
+        <button class="filter-btn" data-filter="favorite">Фавориты</button>
+        <button class="filter-btn" data-filter="recent">Недавние</button>
+      </div>
+    </div>
+
+    <div class="total-stats">
+      <div class="stat-card">
+        <div class="stat-number" id="totalGames">0</div>
+        <div class="stat-label">Всего игр</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="totalHours">0</div>
+        <div class="stat-label">Часов в играх</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="favoriteGames">0</div>
+        <div class="stat-label">Фаворитов</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="activeGames">0</div>
+        <div class="stat-label">Активных игр</div>
+      </div>
+    </div>
+
+    <div class="games-grid" id="gamesGrid"></div>
+  </div>
+
+  <div id="wishlist" class="content-section">
+    <div class="wishlist-header">
+      <a href="https://steamcommunity.com/tradeoffer/new/?partner=1300548007&token=vN1Bv-u2" target="_blank" class="steam-trade">
+        Предложить обмен в Steam
+      </a>
+      <h2>Игры, которые я хочу получить</h2>
+    </div>
+    <div class="games-grid" id="wishlistGrid"></div>
+  </div>
+</div>
+
+<script>
+  // Оригинальный список игр с вашими данными
+ const games = [
+    {
+      title: "CS2",
+      image: "https://avatars.mds.yandex.net/i?id=31d8b17862c72acfcb22c0eb4d7015994d15df90-4012546-images-thumbs&n=13",
+      time: 104.3,
+      lastLaunch: "04.11.2025",
+      favorite: true
+    },
+    {
+      title: "R.E.P.O.",
+      image: "https://avatars.mds.yandex.net/i?id=63b76af9dbe9be4965977b568c4b71e0364da6a3-11623870-images-thumbs&n=13",
+      time: 132.5,
+      lastLaunch: "03.11.2025",
+      favorite: true
+    },
+    {
+      title: "Cuphead",
+      image: "https://avatars.mds.yandex.net/i?id=6dcce95b3805e8cae27b2ab35753e7d185db3895-12721850-images-thumbs&n=13",
+      time: 112.9,
+      lastLaunch: "28.05.2025",
+      favorite: true
+    },
+    {
+      title: "Doki Doki Literature Club",
+      image: "https://avatars.mds.yandex.net/i?id=d51d1984498a54d9bafdae1a9f097fcc9e419fa3-5258850-images-thumbs&n=13",
+      time: 80.9,
+      lastLaunch: "05.01.2025",
+      favorite: true
+    },
+    {
+      title: "Little Nightmares 2",
+      image: "https://yandex-images.clstorage.net/9vl8K4F01/d3c6ae_l41/4lyiNrY7P3zZnMQpNeea7fvAHZrZwwOQAmC04f2KGkKXFki8dwSZ9F6dHBJwSxInUVhrvzX_3PbV-oIm0LNHZfAJ43rweygpitfbfT3kn-_mnV6LxZkHzRgi6L7sgkcexBcu2lN84pIl-zQ0XWcJdloNPvIvvM2Que2nVIWnKyX4VLk6jiFZRfeOojsD-5zt67gxi-urDfwCVMW--eNLd5BgGddQXPq7O_sUFER8CEd9JBT_RJngp6CEp1Cshwk81X6PL4YZdVrugoMzGMGn2u2ZIKnclgLdIGjCmP3JeHaBVwjNe0jjoCnPKxxBUR5wTiUj-XuDwrufgoZOqpMIO_xKuAa-Lnxo05enNS36tdjQhwez2KYIxA1N2JLZz29QuHQ_3XtZzYEl4Acwd2IheVY9DeZYoN-3nIy0UoWwJifZcpoktxh2cP6-jB4544b66pw2l9e4OOwvS_-9yPRac5JHM_JBU9i6Ld8YNHd-F3x_Lxz9bL3znpKJt36ZpSQ523qwE6ELWXPogrA4Ed6L2ei0HK3rniD2A3P8g_jeZ3Ksfh_wW2jZmwHaCjBGcCFhQj8O43i_y66nhI5nnbodBv5IviKHIXxT2qyQFSb8pvzPghKs5JgT7BJV6rjQzH5pu1cg5HxU0qAw6z4qUUgSfnceGetxq--KgKmmbIupIRvsTbIFtxpFZOWMsxIgx4fO9ZgclOeYE-4dQ8yf1NVgW5FdI9dhT_ivHM4sGXZBIlx4ER3LR6HbgJKYrEunqxk25Hi5DpcmQ1_wqpo0NvC35c6iG6_uuTroJlf_mMz1aHWMfhzNd1T6igPOBBhDfj1EYBMyyESN1qKuvJVMg6E6B8dutTWQAktj7Z2iPSztn-3GnBe76oAC6QRPxpD10m97gmc71nNZ7JkCwCkJUFsGZngxLN1WnsC6taGCVqqDIS3Zb7wSlDlld_W5pwAdxJLH0Zsdrei2M-EBReeJ6uA",
+      time: 28.3,
+      lastLaunch: "17.07.2025",
+      favorite: false
+    },
+    {
+      title: "Soundpad",
+      image: "https://avatars.mds.yandex.net/i?id=5ce3ee51f30048ecb75c63958faa99b09e9c05a7-13469218-images-thumbs&n=13",
+      time: 24.9,
+      lastLaunch: "02.11.2025",
+      favorite: false
+    },
+    {
+      title: "The Forest",
+      image: "https://avatars.mds.yandex.net/i?id=7d16e0bc9ccb40001c742bf17e0b64a5242e9843-8981816-images-thumbs&n=13",
+      time: 21.5,
+      lastLaunch: "19.10.2025",
+      favorite: false
+    },
+    {
+      title: "The Binding of Isaac",
+      image: "https://shared.fastly.steamstatic.com/store_item_assets//steam/apps/113200/header.jpg?t=1643480517",
+      time: 11.4,
+      lastLaunch: "30.10.2025",
+      favorite: false
+    },
+    {
+      title: "Metro 2033 Redux",
+      image: "https://shared.fastly.steamstatic.com/store_item_assets//steam/apps/286690/header.jpg?t=1741110084",
+      time: 10.3,
+      lastLaunch: "03.05.2025",
+      favorite: false
+    },
+    {
+      title: "Selene ~Apoptosis~",
+      image: "https://shared.fastly.steamstatic.com/store_item_assets//steam/apps/1398210/header.jpg?t=1744545547",
+      time: 9,
+      lastLaunch: "02.05.2025",
+      favorite: false
+    },
+    {
+      title: "Euro Truck Simulator 2",
+      image: "https://shared.fastly.steamstatic.com/store_item_assets//steam/apps/227300/9a81dc3126c56637297b654f9dcac057cfd79b77/header.jpg?t=1762506977",
+      time: 9,
+      lastLaunch: "27.10.2025",
+      favorite: true
+    },
+    {
+      title: "No, I'm not a Human",
+      image: "https://shared.fastly.steamstatic.com/store_item_assets//steam/apps/3180070/fadebc14211b17b5a6603926612ead9294cad9ce/header.jpg?t=1761654689",
+      time: 8.9,
+      lastLaunch: "28.09.2025",
+      favorite: false
+    },
+    {
+      title: "Undertale",
+      image: "https://shared.fastly.steamstatic.com/store_item_assets//steam/apps/391540/header.jpg?t=1757349115",
+      time: 8.4,
+      lastLaunch: "04.01.2025",
+      favorite: false
+    },
+    {
+      title: "MiSide",
+      image: "https://shared.fastly.steamstatic.com/store_item_assets//steam/apps/2527500/header.jpg?t=1761879413",
+      time: 7.3,
+      lastLaunch: "28.05.2025",
+      favorite: false
+    },
+    {
+      title: "Plague Inc: Evolved",
+      image: "https://shared.fastly.steamstatic.com/store_item_assets//steam/apps/246620/header.jpg?t=1762364180",
+      time: 5.4,
+      lastLaunch: "22.03.2025",
+      favorite: false
+    },
+    {
+      title: "Goose Goose Duck",
+      image: "https://shared.fastly.steamstatic.com/store_item_assets//steam/apps/1568590/header.jpg?t=1750955551",
+      time: 5,
+      lastLaunch: "10.05.2025",
+      favorite: false
+    },
+    {
+      title: "POSTAL 2",
+      image: "https://shared.fastly.steamstatic.com/store_item_assets//steam/apps/223470/header_russian.jpg?t=1726251082",
+      time: 4.3,
+      lastLaunch: "14.07.2025",
+      favorite: false
+    },
+    {
+      title: "Buckshot Roulette",
+      image: "https://shared.fastly.steamstatic.com/store_item_assets//steam/apps/2835570/header.jpg?t=1762442355",
+      time: 3.4,
+      lastLaunch: "30.03.2025",
+      favorite: false
+    },
+    {
+      title: "Detroit: Become Human",
+      image: "https://shared.fastly.steamstatic.com/store_item_assets//steam/apps/1222140/header.jpg?t=1667468479",
+      time: 2.8,
+      lastLaunch: "22.03.2025",
+      favorite: false
+    },
+    {
+      title: "SCP: Secret Laboratory",
+      image: "https://shared.fastly.steamstatic.com/store_item_assets//steam/apps/700330/ef0c2c19cbd56f534b9378dee066f23279a29275/header.jpg?t=1763161281",
+      time: 2.6,
+      lastLaunch: "27.05.2025",
+      favorite: false
+    },
+    {
+      title: "The NOexistenceN of you AND me",
+      image: "https://shared.fastly.steamstatic.com/store_item_assets//steam/apps/2873080/header.jpg?t=1758591398",
+      time: 1.72,
+      lastLaunch: "27.05.2025",
+      favorite: false
+    },
+    {
+      title: "Left 4 Dead",
+      image: "https://shared.fastly.steamstatic.com/store_item_assets//steam/apps/500/header.jpg?t=1745368560",
+      time: 1.48,
+      lastLaunch: "28.05.2025",
+      favorite: false
+    },
+    {
+      title: "House Flipper",
+      image: "https://shared.fastly.steamstatic.com/store_item_assets//steam/apps/613100/header_russian.jpg?t=1763159723",
+      time: 1.33,
+      lastLaunch: "19.07.2025",
+      favorite: false
+    },
+    {
+      title: "Everlasting Summer",
+      image: "https://shared.fastly.steamstatic.com/store_item_assets//steam/apps/331470/header_russian.jpg?t=1741850740",
+      time: 1.3,
+      lastLaunch: "25.08.2025",
+      favorite: false
+    },
+    {
+      title: "Left 4 Dead 2",
+      image: "https://shared.fastly.steamstatic.com/store_item_assets//steam/apps/550/header.jpg?t=1745368562",
+      time: 1.22,
+      lastLaunch: "10.06.2025",
+      favorite: false
+    },
+    {
+      title: "Hatred",
+      image: "https://shared.fastly.steamstatic.com/store_item_assets//steam/apps/341940/header.jpg?t=1727965684",
+      time: 1.03,
+      lastLaunch: "28.10.2025",
+      favorite: false
+    },
+    {
+      title: "Eraser",
+      image: "https://shared.fastly.steamstatic.com/store_item_assets//steam/apps/1819570/header.jpg?t=1640571341",
+      time: 0.98,
+      lastLaunch: "29.08.2025",
+      favorite: false
+    },
+    {
+      title: "Strinova",
+      image: "https://shared.fastly.steamstatic.com/store_item_assets//steam/apps/1282270/9f2316553893c46fadf63fa27df1d2d0d3383f8f/header.jpg?t=1761717145",
+      time: 0.666667,
+      lastLaunch: "06.01.2025",
+      favorite: false
+    },
+    {
+      title: "Ваша мать",
+      image: "https://shared.fastly.steamstatic.com/store_item_assets//steam/apps/3399950/header_russian.jpg?t=1757872666",
+      time: 0.633333,
+      lastLaunch: "25.08.2025",
+      favorite: false
+    },
+    {
+      title: "City Car Driving",
+      image: "https://shared.fastly.steamstatic.com/store_item_assets//steam/apps/493490/header.jpg?t=1698810885",
+      time: 0.616667,
+      lastLaunch: "27.05.2025",
+      favorite: false
+    },
+    {
+      title: "Liar`s Bar",
+      image: "https://shared.fastly.steamstatic.com/store_item_assets//steam/apps/3097560/779fd888bc6ac673dd75254aad814b7e8a47ce7a/header.jpg?t=1750969308",
+      time: 0.6,
+      lastLaunch: "28.05.2025",
+      favorite: false
+    },
+    {
+      title: "Tiny Bunny",
+      image: "https://shared.fastly.steamstatic.com/store_item_assets//steam/apps/1421250/header.jpg?t=1762968763",
+      time: 0.5,
+      lastLaunch: "19.07.2025",
+      favorite: true
+    },
+    {
+      title: "Project Zomboid",
+      image: "https://shared.fastly.steamstatic.com/store_item_assets//steam/apps/108600/header.jpg?t=1762369969",
+      time: 0.4,
+      lastLaunch: "22.03.2025",
+      favorite: false
+    },
+    {
+      title: "你的老婆",
+      image: "https://shared.fastly.steamstatic.com/store_item_assets//steam/apps/3339420/fe3293227391e65cbcb47bf0ced6aa0f4fd28bf0/header.jpg?t=1763386146",
+      time: 0.033333,
+      lastLaunch: "08.02.2025",
+      favorite: false
+    },
+    {
+      title: "Heavy Rain",
+      image: "https://shared.fastly.steamstatic.com/store_item_assets//steam/apps/960910/header.jpg?t=1675271942",
+      time: 0,
+      lastLaunch: "-",
+      favorite: false
+    },
+    {
+      title: "Portal",
+      image: "https://shared.fastly.steamstatic.com/store_item_assets//steam/apps/400/header.jpg?t=1745368554",
+      time: 0.25,
+      lastLaunch: "03.06.2025",
+      favorite: false
+    },
+    {
+      title: "Portal 2",
+      image: "https://shared.fastly.steamstatic.com/store_item_assets//steam/apps/620/header.jpg?t=1745363004",
+      time: 0.066667,
+      lastLaunch: "19.07.2025",
+      favorite: false
+    },
+    {
+      title: "Outlast 2",
+      image: "https://shared.fastly.steamstatic.com/store_item_assets//steam/apps/414700/header.jpg?t=1618944453",
+      time: 0.0000000002673,
+      lastLaunch: "-",
+      favorite: false
+    },
+    {
+      title: "Pic-Me!",
+      image: "https://shared.fastly.steamstatic.com/store_item_assets//steam/apps/3265280/header.jpg?t=1761043872",
+      time: 0.07333299903,
+      lastLaunch: "-",
+      favorite: false
+    },
+    {
+      title: "PUBG: BATTLEGROUNDS",
+      image: "https://avatars.mds.yandex.net/i?id=5681603cdc0a5efcedc837185a80dcf63352071b-5709069-images-thumbs&n=13",
+      time: 0.000000000703,
+      lastLaunch: "16.08.2024",
+      favorite: false
+    },
+     {
+      title: "Wallpaper Engine",
+      image: "https://shared.fastly.steamstatic.com/store_item_assets//steam/apps/431960/header.jpg?t=1739211362",
+      time: 17.4,
+      lastLaunch: "16.11.2025",
+      favorite: true
+    },
+    {
+      title: "Станция Сайхате",
+      image: "https://shared.fastly.steamstatic.com/store_item_assets//steam/apps/3079280/header_russian.jpg?t=1754553538",
+      time: 17.3,
+      lastLaunch: "16.09.2025",
+      favorite: false
+    },
+    {
+      title: "Phasmophobia",
+      image: "https://shared.fastly.steamstatic.com/store_item_assets//steam/apps/739630/c227a2855aba60f3657bc0c3a46515b8c41fb2b6/header.jpg?t=1763980860",
+      time: 13.3,
+      lastLaunch: "24.03.2025",
+      favorite: false
+    }
+  ];
+
+  // Оригинальный список желаемых игр
+  const wishlist = [
+    {
+      title: "Teardown",
+      image: "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1167630/ss_dc08bfb0b8b381bc580d2599ad24462af4690a20.jpg?t=1760518638",
+      price: "1399 руб"
+    },
+    {
+      title: "Garry's Mod",
+      image: "https://shared.fastly.steamstatic.com/store_item_assets//steam/apps/4000/header.jpg?t=1745368554",
+      price: "750 руб"
+    },
+    {
+      title: "Little Nightmares III",
+      image: "https://shared.fastly.steamstatic.com/store_item_assets//steam/apps/1392860/header.jpg?t=1762353803",
+      price: "2849 руб"
+    },
+    {
+      title: "WorldBox - God Simulator",
+      image: "https://shared.fastly.steamstatic.com/store_item_assets//steam/apps/1206560/header.jpg?t=1762353803",
+      price: "710 руб"
+    },
+    {
+      title: "BeamNG.drive",
+      image: "https://avatars.mds.yandex.net/i?id=d762ec2b049fbd037963dbce962f27de58c5f1ce-5235013-images-thumbs&n=13",
+      price: "880 руб"
+    },
+    {
+      title: "Rust",
+      image: "https://avatars.mds.yandex.net/i?id=acfcbd481f14cc3eff0d1b50a26b89bd497a4dc8-5342977-images-thumbs&n=13",
+      price: "1399 руб"
+    },
+    {
+      title: "Dispatch",
+      image: "https://shared.fastly.steamstatic.com//store_item_assets/steam/apps/2592160/header.jpg?t=1763398023",
+      price: "1100 руб"
+    }
+  ];
+
+  // Сортировка игр по времени
+  games.sort((a, b) => b.time - a.time);
+
+  const gamesGrid = document.getElementById('gamesGrid');
+  const wishlistGrid = document.getElementById('wishlistGrid');
+  const navBtns = document.querySelectorAll('.nav-btn');
+  const filterBtns = document.querySelectorAll('.filter-btn');
+
+  // Функция для обновления статистики
+  function updateStats() {
+    const totalGames = games.length;
+    const totalHours = games.reduce((sum, game) => sum + game.time, 0);
+    const favoriteGames = games.filter(game => game.favorite).length;
+    const activeGames = games.filter(game => game.time > 0).length;
+
+    document.getElementById('totalGames').textContent = totalGames;
+    document.getElementById('totalHours').textContent = totalHours;
+    document.getElementById('favoriteGames').textContent = favoriteGames;
+    document.getElementById('activeGames').textContent = activeGames;
+  }
+
+  // Рендер игр
+  function renderGames(filter = 'all') {
+    gamesGrid.innerHTML = '';
+
+    let filteredGames = games;
+
+    if (filter === 'favorite') {
+      filteredGames = games.filter(game => game.favorite);
+    } else if (filter === 'recent') {
+      // Показываем игры, в которые играли в последнее время (за последние 30 дней)
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+      filteredGames = games.filter(game => {
+        if (game.lastLaunch === '-' || !game.lastLaunch) return false;
+
+        const launchDate = new Date(game.lastLaunch.split('.').reverse().join('-'));
+        return launchDate >= thirtyDaysAgo;
+      });
+    }
+
+    filteredGames.forEach(game => {
+      const progressWidth = Math.min((game.time / 150) * 100, 100);
+
+      const card = document.createElement('div');
+      card.className = 'game-card';
+      card.innerHTML = `
+        ${game.favorite ? '<div class="game-badge">Фаворит</div>' : ''}
+        <img class="game-cover" src="${game.image}" alt="${game.title}" loading="lazy">
+        <div class="game-info">
+          <h3 class="game-title">${game.title}</h3>
+          <div class="game-meta">
+            <span class="game-time">${game.time} ч</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: ${progressWidth}%"></div>
+          </div>
+          <div class="game-last-played">Последний запуск: ${game.lastLaunch}</div>
+        </div>
+      `;
+
+      gamesGrid.appendChild(card);
+    });
+  }
+
+  // Рендер вишлиста
+  function renderWishlist() {
+    wishlistGrid.innerHTML = '';
+
+    wishlist.forEach(game => {
+      const card = document.createElement('div');
+      card.className = 'game-card';
+      card.innerHTML = `
+        <img class="game-cover" src="${game.image}" alt="${game.title}" loading="lazy">
+        <div class="game-info">
+          <h3 class="game-title">${game.title}</h3>
+          <div class="game-meta">
+            <span class="game-price">${game.price}</span>
+          </div>
+        </div>
+      `;
+      wishlistGrid.appendChild(card);
+    });
+  }
+
+  // Переключение табов
+  navBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (btn.dataset.tab) {
+        navBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        document.querySelectorAll('.content-section').forEach(section => {
+          section.classList.remove('active');
+        });
+        document.getElementById(btn.dataset.tab).classList.add('active');
+
+        if (btn.dataset.tab === 'wishlist') {
+          renderWishlist();
+        }
+      }
+    });
+  });
+
+  // Фильтрация игр
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      filterBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderGames(btn.dataset.filter);
+    });
+  });
+
+  // Инициализация
+  updateStats();
+  renderGames();
+</script>
+</body>
+</html>
