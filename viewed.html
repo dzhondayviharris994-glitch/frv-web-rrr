@@ -22,6 +22,7 @@
     --text-muted: #94a3b8;
     --accent: #8b5cf6;
     --gradient: linear-gradient(135deg, #6366f1, #8b5cf6);
+    --admin: #ef4444;
   }
 
   body {
@@ -248,6 +249,46 @@
     box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
   }
 
+  /* Кнопка администрации */
+  .admin-button-container {
+    text-align: center;
+    margin: 20px 0;
+    display: none;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.5s ease;
+  }
+
+  .admin-button-container.show {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .admin-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 16px 36px;
+    background: linear-gradient(135deg, var(--admin), #dc2626);
+    color: white;
+    text-decoration: none;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    border: 2px solid rgba(239, 68, 68, 0.3);
+    box-shadow: 0 6px 20px rgba(239, 68, 68, 0.3);
+    width: auto;
+  }
+
+  .admin-button:hover {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 10px 25px rgba(239, 68, 68, 0.4);
+    background: linear-gradient(135deg, #dc2626, var(--admin));
+  }
+
   @keyframes fadeIn {
     from {
       opacity: 0;
@@ -352,6 +393,11 @@
     .section-header {
       font-size: 1.6rem;
     }
+
+    .admin-button {
+      padding: 14px 28px;
+      font-size: 1rem;
+    }
   }
 
   @media (max-width: 480px) {
@@ -386,6 +432,13 @@
   <a href="index.html" class="home-link">
     ← Вернуться на главную
   </a>
+
+  <!-- Кнопка администрации (скрыта по умолчанию) -->
+  <div class="admin-button-container" id="adminButtonContainer">
+    <a href="ADMINKA.html" class="admin-button">
+      Вход в администрацию
+    </a>
+  </div>
 
   <!-- Поисковая строка -->
   <div class="search-container">
@@ -1117,13 +1170,33 @@
   <div id="books" class="content-section">
     <h2 class="section-header">Книги</h2>
     <div class="titles-grid">
-      <div class="title-card" style="pointer-events: none; opacity: 0.7;">
-        <div class="title-name">Пока нет книг в коллекции</div>
-        <div class="title-status">Раздел в разработке</div>
+      <a href="book1.html" class="title-card">
+        <div class="title-name">Горе от ума</div>
+      </a>
+      <a href="book2.html" class="title-card">
+        <div class="title-name">Капитанская дочка</div>
+      </a>
+      <a href="book3.html" class="title-card">
+        <div class="title-name"></div>
+      </a>
+      <a href="book4.html" class="title-card">
+        <div class="title-name"></div>
+      </a>
+      <a href="book5.html" class="title-card">
+        <div class="title-name"></div>
+      </a>
+      <a href="book6.html" class="title-card">
+        <div class="title-name"></div>
+      </a>
+      <a href="book7.html" class="title-card">
+        <div class="title-name"></div>
+      </a>
+      <a href="book8.html" class="title-card">
+        <div class="title-name"></div>
+      </a>
       </div>
     </div>
   </div>
-</div>
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
@@ -1131,6 +1204,7 @@
     const contentSections = document.querySelectorAll('.content-section');
     const searchInput = document.getElementById('searchInput');
     const searchResults = document.getElementById('searchResults');
+    const adminButtonContainer = document.getElementById('adminButtonContainer');
     let allTitleCards = [];
 
     // Собираем все карточки для поиска
@@ -1178,7 +1252,24 @@
 
     // Обработчик ввода в поисковую строку
     searchInput.addEventListener('input', function() {
-      performSearch(this.value);
+      const searchTerm = this.value;
+
+      // Проверка на секретную команду
+      if (searchTerm.toLowerCase() === 'showadmin0') {
+        adminButtonContainer.classList.add('show');
+        this.value = '';
+        searchResults.textContent = '';
+        searchResults.classList.remove('show');
+
+        // Показываем все карточки
+        allTitleCards.forEach(card => {
+          card.classList.remove('hidden');
+          card.classList.add('visible');
+        });
+      } else {
+        adminButtonContainer.classList.remove('show');
+        performSearch(searchTerm);
+      }
     });
 
     // Обработчики для табов категорий
@@ -1202,6 +1293,9 @@
         // Сбрасываем поиск при переключении категории
         searchInput.value = '';
         searchResults.classList.remove('show');
+
+        // Скрываем кнопку администрации
+        adminButtonContainer.classList.remove('show');
 
         // Показываем все карточки в активной категории
         allTitleCards.forEach(card => {

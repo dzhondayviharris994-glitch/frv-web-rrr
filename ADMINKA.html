@@ -1,0 +1,1249 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Панель администратора</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0c0c0d 0%, #1a1a2e 100%);
+            color: #f0f0f0;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .admin-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px solid #333;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo i {
+            font-size: 2.2rem;
+            color: #6c63ff;
+            animation: pulse 2s infinite;
+        }
+
+        .logo h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            background: linear-gradient(90deg, #6c63ff, #ff6584);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px 20px;
+            border-radius: 30px;
+            backdrop-filter: blur(10px);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .user-info:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .user-info img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid #6c63ff;
+        }
+
+        .admin-access-text {
+            cursor: pointer;
+            color: #aaa;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            border-color: rgba(108, 99, 255, 0.3);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-title i {
+            color: #6c63ff;
+        }
+
+        .time-container {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .time-display {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(108, 99, 255, 0.5);
+            transition: all 0.5s ease;
+        }
+
+        .time-label {
+            font-size: 1.2rem;
+            color: #aaa;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .timezone-info {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+
+        .timezone-info i {
+            color: #6c63ff;
+        }
+
+        .time-switcher {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .time-btn {
+            background: rgba(108, 99, 255, 0.2);
+            border: none;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .time-btn:hover {
+            background: rgba(108, 99, 255, 0.4);
+            transform: scale(1.05);
+        }
+
+        .time-btn.active {
+            background: #6c63ff;
+            box-shadow: 0 0 15px rgba(108, 99, 255, 0.5);
+        }
+
+        .online-counter {
+            font-size: 4rem;
+            font-weight: 700;
+            text-align: center;
+            margin: 20px 0;
+            color: #4cd964;
+            text-shadow: 0 0 10px rgba(76, 217, 100, 0.3);
+        }
+
+        .online-label {
+            text-align: center;
+            color: #aaa;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+
+        .online-change {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            color: #4cd964;
+            font-size: 1rem;
+        }
+
+        .online-change.negative {
+            color: #ff6584;
+        }
+
+        .progress-container {
+            margin-top: 25px;
+        }
+
+        .progress-item {
+            margin-bottom: 20px;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .progress-bar {
+            height: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 5px;
+            transition: width 1s ease-in-out;
+        }
+
+        .cpu-progress {
+            background: linear-gradient(90deg, #ff6584, #ff9a8b);
+        }
+
+        .memory-progress {
+            background: linear-gradient(90deg, #36d1dc, #5b86e5);
+        }
+
+        .traffic-progress {
+            background: linear-gradient(90deg, #4cd964, #8ae68a);
+        }
+
+        .activity-list {
+            list-style: none;
+            margin-top: 15px;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            cursor: pointer;
+            transition: background-color 0.2s;
+            position: relative;
+        }
+
+        .activity-item:hover {
+            background-color: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .activity-icon.login {
+            background: rgba(76, 217, 100, 0.2);
+        }
+
+        .activity-icon.purchase {
+            background: rgba(108, 99, 255, 0.2);
+        }
+
+        .activity-icon.pageview {
+            background: rgba(255, 101, 132, 0.2);
+        }
+
+        .activity-details h4 {
+            font-size: 1rem;
+            margin-bottom: 5px;
+        }
+
+        .activity-details p {
+            color: #aaa;
+            font-size: 0.85rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-top: 15px;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #aaa;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .update-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: none;
+            color: #aaa;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .update-btn:hover {
+            background: rgba(108, 99, 255, 0.2);
+            color: #fff;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 600px;
+            width: 90%;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(108, 99, 255, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #6c63ff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-title i {
+            font-size: 1.3rem;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: #aaa;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .close-modal:hover {
+            color: #fff;
+        }
+
+        .problem-container {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 25px;
+            margin: 20px 0;
+            border: 1px solid rgba(108, 99, 255, 0.2);
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .problem-text {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            color: #fff;
+        }
+
+        .problem-equation {
+            font-family: 'Courier New', monospace;
+            font-size: 1.2rem;
+            color: #4cd964;
+            margin: 15px 0;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 5px;
+            text-align: center;
+            line-height: 1.8;
+            word-break: break-word;
+        }
+
+        .problem-hint {
+            color: #aaa;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            font-style: italic;
+        }
+
+        .answer-input {
+            width: 100%;
+            padding: 15px;
+            margin: 20px 0;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 1.1rem;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+        }
+
+        .answer-input:focus {
+            outline: none;
+            border-color: #6c63ff;
+            box-shadow: 0 0 10px rgba(108, 99, 255, 0.3);
+        }
+
+        .submit-btn {
+            background: linear-gradient(90deg, #6c63ff, #5b86e5);
+            border: none;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            width: 100%;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(108, 99, 255, 0.3);
+        }
+
+        .error-message {
+            color: #ff6584;
+            text-align: center;
+            margin-top: 15px;
+            display: none;
+            font-weight: 600;
+        }
+
+        .rebus-password {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            font-size: 1.5rem;
+            letter-spacing: 2px;
+            border: 1px solid rgba(108, 99, 255, 0.2);
+            color: #4cd964;
+            word-break: break-all;
+        }
+
+        .rebus-hint {
+            color: #aaa;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .secret-trigger {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            opacity: 0.01;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .secret-trigger-1 {
+            top: 15px;
+            right: 15px;
+        }
+
+        .secret-trigger-2 {
+            bottom: 15px;
+            left: 15px;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
+
+        .glitch-effect {
+            animation: glitch 0.5s linear infinite;
+            color: #ff6584;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+
+            .time-display {
+                font-size: 2.8rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .time-switcher {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .time-btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .problem-equation {
+                font-size: 1rem;
+                line-height: 1.5;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="modal-overlay" id="taskModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">
+                    <i class="fas fa-calculator" id="modalIcon"></i>
+                    <span id="modalSubject">Алгебраическая задача</span>
+                </h2>
+                <button class="close-modal" id="closeTaskModal">&times;</button>
+            </div>
+            <div class="problem-container">
+                <div class="problem-text" id="problemText"></div>
+                <div class="problem-equation" id="problemEquation"></div>
+                <div class="problem-hint" id="problemHint"></div>
+            </div>
+            <input type="text" class="answer-input" id="taskAnswer" placeholder="Введите ответ">
+            <button class="submit-btn" id="submitTaskAnswer">
+                <i class="fas fa-check"></i> Проверить ответ
+            </button>
+            <div class="error-message" id="taskError">Неверный ответ! Последовательность сброшена.</div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="passwordModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title"><i class="fas fa-unlock-alt"></i> Пароль системы</h2>
+                <button class="close-modal" id="closePasswordModal">&times;</button>
+            </div>
+            <p>Вы успешно прошли все проверки!</p>
+            <div class="rebus-password" id="rebusPassword"></div>
+            <p class="rebus-hint">Пароль был защищен многоступенчатой системой проверки знаний.</p>
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="time-btn" id="copyPassword" style="margin: 0 auto;">
+                    <i class="fas fa-copy"></i> Копировать пароль
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="admin-container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-shield-alt"></i>
+                <h1>Панель администратора</h1>
+            </div>
+            <div class="user-info" id="userInfo">
+                <img src="https://ui-avatars.com/api/?name=Admin+User&background=6c63ff&color=fff" alt="Admin">
+                <div>
+                    <div>Администратор</div>
+                    <div style="font-size: 0.8rem; color: #aaa;">Уровень доступа: <span class="admin-access-text" id="adminAccessText">Админ</span></div>
+                </div>
+            </div>
+        </header>
+
+        <div class="dashboard">
+            <div class="card">
+                <div class="secret-trigger secret-trigger-1" id="secretTrigger1"></div>
+                <div class="card-header">
+                    <h2 class="card-title"><i class="fas fa-clock"></i> Мировое время</h2>
+                    <button class="update-btn" id="refreshTime">
+                        <i class="fas fa-sync-alt"></i> Обновить
+                    </button>
+                </div>
+                <div class="time-container">
+                    <span class="time-label" id="timeLabel">Системное время</span>
+                    <div class="time-display" id="timeDisplay">00:00:00</div>
+                    <div class="timezone-info">
+                        <i class="fas fa-globe-americas"></i>
+                        <span id="timezoneInfo">Часовой пояс: ваше системное время</span>
+                    </div>
+                    <div class="time-switcher">
+                        <button class="time-btn active" id="systemTimeBtn" data-timezone="system">
+                            <i class="fas fa-desktop"></i> Системное
+                        </button>
+                        <button class="time-btn" id="moscowTimeBtn" data-timezone="moscow">
+                            <i class="fas fa-landmark"></i> Москва
+                        </button>
+                        <button class="time-btn" id="tokyoTimeBtn" data-timezone="tokyo">
+                            <i class="fas fa-torii-gate"></i> Токио
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title"><i class="fas fa-users"></i> Пользователи онлайн</h2>
+                    <button class="update-btn" id="refreshOnline">
+                        <i class="fas fa-sync-alt"></i> Обновить
+                    </button>
+                </div>
+                <div class="online-counter" id="onlineCount">327</div>
+                <div class="online-label">сейчас на сайте</div>
+                <div class="online-change" id="onlineChange">
+                    <i class="fas fa-arrow-up"></i> <span>+12 за последние 5 мин</span>
+                </div>
+
+                <div class="progress-container">
+                    <div class="progress-item">
+                        <div class="progress-header">
+                            <span>Активные сессии</span>
+                            <span id="activeSessions">142</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill traffic-progress" style="width: 65%"></div>
+                        </div>
+                    </div>
+                    <div class="progress-item">
+                        <div class="progress-header">
+                            <span>Новые пользователи</span>
+                            <span id="newUsers">24</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill cpu-progress" style="width: 40%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title"><i class="fas fa-server"></i> Нагрузка сервера</h2>
+                    <button class="update-btn" id="refreshServer">
+                        <i class="fas fa-sync-alt"></i> Обновить
+                    </button>
+                </div>
+
+                <div class="progress-container">
+                    <div class="progress-item">
+                        <div class="progress-header">
+                            <span>Загрузка CPU</span>
+                            <span id="cpuLoad">47%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill cpu-progress" style="width: 47%"></div>
+                        </div>
+                    </div>
+                    <div class="progress-item">
+                        <div class="progress-header">
+                            <span>Использование памяти</span>
+                            <span id="memoryUsage">68%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill memory-progress" style="width: 68%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-value" id="uptime">99.8%</div>
+                        <div class="stat-label">Аптайм</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="responseTime">124ms</div>
+                        <div class="stat-label">Средний отклик</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="secret-trigger secret-trigger-2" id="secretTrigger2"></div>
+                <div class="card-header">
+                    <h2 class="card-title"><i class="fas fa-history"></i> Последняя активность</h2>
+                </div>
+
+                <ul class="activity-list">
+                    <li class="activity-item" id="activity1">
+                        <div class="activity-icon login">
+                            <i class="fas fa-sign-in-alt"></i>
+                        </div>
+                        <div class="activity-details">
+                            <h4>Новый пользователь</h4>
+                            <p>Максим Ч. зарегистрировался 2 минуты назад</p>
+                        </div>
+                    </li>
+                    <li class="activity-item" id="activity2">
+                        <div class="activity-icon purchase">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <div class="activity-details">
+                            <h4>Оформлен заказ</h4>
+                            <p>Заказ #45892 на сумму 12 450 ₽</p>
+                        </div>
+                    </li>
+                    <li class="activity-item" id="activity3">
+                        <div class="activity-icon pageview">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                        <div class="activity-details">
+                            <h4>Рекорд просмотров</h4>
+                            <p>Страница /games набрала 1.2K просмотров за час</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Обновлено: <span id="lastUpdate">только что</span> | Все системы работают в штатном режиме</p>
+        </div>
+    </div>
+
+    <script>
+        const timeDisplay = document.getElementById('timeDisplay');
+        const timeLabel = document.getElementById('timeLabel');
+        const timezoneInfo = document.getElementById('timezoneInfo');
+        const timeButtons = document.querySelectorAll('.time-btn');
+        const refreshTimeBtn = document.getElementById('refreshTime');
+        const onlineCount = document.getElementById('onlineCount');
+        const onlineChange = document.getElementById('onlineChange');
+        const refreshOnlineBtn = document.getElementById('refreshOnline');
+        const refreshServerBtn = document.getElementById('refreshServer');
+        const cpuLoad = document.getElementById('cpuLoad');
+        const memoryUsage = document.getElementById('memoryUsage');
+        const uptime = document.getElementById('uptime');
+        const responseTime = document.getElementById('responseTime');
+        const activeSessions = document.getElementById('activeSessions');
+        const newUsers = document.getElementById('newUsers');
+        const lastUpdate = document.getElementById('lastUpdate');
+
+        const taskModal = document.getElementById('taskModal');
+        const passwordModal = document.getElementById('passwordModal');
+        const closeTaskModal = document.getElementById('closeTaskModal');
+        const closePasswordModal = document.getElementById('closePasswordModal');
+        const rebusPassword = document.getElementById('rebusPassword');
+        const copyPasswordBtn = document.getElementById('copyPassword');
+        const secretTrigger1 = document.getElementById('secretTrigger1');
+        const secretTrigger2 = document.getElementById('secretTrigger2');
+        const activity1 = document.getElementById('activity1');
+        const moscowTimeBtn = document.getElementById('moscowTimeBtn');
+        const tokyoTimeBtn = document.getElementById('tokyoTimeBtn');
+        const adminAccessText = document.getElementById('adminAccessText');
+
+        const modalTitle = document.getElementById('modalTitle');
+        const modalIcon = document.getElementById('modalIcon');
+        const modalSubject = document.getElementById('modalSubject');
+        const problemText = document.getElementById('problemText');
+        const problemEquation = document.getElementById('problemEquation');
+        const problemHint = document.getElementById('problemHint');
+        const taskAnswer = document.getElementById('taskAnswer');
+        const submitTaskAnswer = document.getElementById('submitTaskAnswer');
+        const taskError = document.getElementById('taskError');
+
+        let currentStep = 0;
+        let clickCount = 0;
+        const requiredClicks = 3;
+        const targetPassword = '[5]Ci{13}Gor#993G6A=719';
+
+        let currentTimezone = 'system';
+
+        const tasks = [
+            {
+                step: 1,
+                subject: 'Алгебра',
+                icon: 'fa-calculator',
+                text: 'Решите квадратное уравнение и введите сумму его корней:',
+                equation: 'x² - 7x + 10 = 0',
+                hint: '',
+                answer: '7'
+            },
+            {
+                step: 2,
+                subject: 'Геометрия',
+                icon: 'fa-shapes',
+                text: 'В прямоугольном треугольнике катеты равны 6 см и 8 см. Найдите длину гипотенузы:',
+                equation: 'c = √(a² + b²)',
+                hint: '',
+                answer: '10'
+            },
+            {
+                step: 3,
+                subject: 'Биология',
+                icon: 'fa-dna',
+                text: 'Сколько пар хромосом содержится в соматической клетке человека?',
+                equation: 'Диплоидный набор хромосом',
+                hint: '',
+                answer: '23'
+            },
+            {
+                step: 4,
+                subject: 'Химия',
+                icon: 'fa-flask',
+                text: 'Рассчитайте молярную массу серной кислоты (H₂SO₄). Ответ округлите до целых:',
+                equation: 'H=?, S=?, O=?',
+                hint: '',
+                answer: '98'
+            },
+            {
+                step: 5,
+                subject: 'Комбинированная задача',
+                icon: 'fa-brain',
+                text: 'Решите сложное выражение, объединяющее математику, физику и химию:',
+                equation: '(2³ × √144) + (6.022×10²³ ÷ 10²²) - (π × 10) + (ln(e¹⁰) ÷ log₁₀(1000)) × (sin(90°) + cos(0°)) - (молярная масса CO₂ ÷ 2)',
+                hint: 'Последовательно вычислите: 2³=8, √144=12, 6.022×10²³÷10²²=60.22, π≈3.1416, ln(e¹⁰)=10, log₁₀(1000)=3, sin(90°)=1, cos(0°)=1, молярная масса CO₂=44',
+                answer: '92.28'
+            }
+        ];
+
+        function formatTime(date, timezone) {
+            let options = {
+                hour12: false,
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            };
+
+            if (timezone === 'moscow') {
+                const moscowTime = new Date(date.getTime() + (3 * 60 * 60 * 1000));
+                return moscowTime.toISOString().substr(11, 8);
+            } else if (timezone === 'tokyo') {
+                const tokyoTime = new Date(date.getTime() + (9 * 60 * 60 * 1000));
+                return tokyoTime.toISOString().substr(11, 8);
+            } else {
+                return date.toLocaleTimeString('ru-RU', options);
+            }
+        }
+
+        function updateTime() {
+            const now = new Date();
+            timeDisplay.textContent = formatTime(now, currentTimezone);
+
+            timeDisplay.classList.remove('fade-in');
+            void timeDisplay.offsetWidth;
+            timeDisplay.classList.add('fade-in');
+
+            let timezoneText = '';
+            if (currentTimezone === 'system') {
+                timezoneText = 'Часовой пояс: ваше системное время';
+                timeLabel.textContent = 'Системное время';
+            } else if (currentTimezone === 'moscow') {
+                timezoneText = 'Часовой пояс: Москва (UTC+3)';
+                timeLabel.textContent = 'Московское время';
+            } else if (currentTimezone === 'tokyo') {
+                timezoneText = 'Часовой пояс: Токио (UTC+9)';
+                timeLabel.textContent = 'Токийское время';
+            }
+            timezoneInfo.textContent = timezoneText;
+        }
+
+        function updateOnlineStats() {
+            const baseOnline = 300;
+            const randomChange = Math.floor(Math.random() * 30) - 10;
+            const newOnline = Math.max(baseOnline + randomChange, 10);
+
+            animateCounter(onlineCount, parseInt(onlineCount.textContent), newOnline, 500);
+
+            const changeValue = randomChange >= 0 ? `+${randomChange}` : randomChange;
+            onlineChange.innerHTML = `<i class="fas fa-arrow-${randomChange >= 0 ? 'up' : 'down'}"></i> <span>${changeValue} за последние 5 мин</span>`;
+
+            if (randomChange < 0) {
+                onlineChange.classList.add('negative');
+            } else {
+                onlineChange.classList.remove('negative');
+            }
+
+            const newSessions = Math.floor(newOnline * 0.4 + Math.random() * 30);
+            const newUsersCount = Math.floor(newOnline * 0.05 + Math.random() * 10);
+
+            animateCounter(activeSessions, parseInt(activeSessions.textContent), newSessions, 500);
+            animateCounter(newUsers, parseInt(newUsers.textContent), newUsersCount, 500);
+        }
+
+        function updateServerStats() {
+            const newCpuLoad = Math.floor(30 + Math.random() * 40);
+            const newMemoryUsage = Math.floor(50 + Math.random() * 30);
+            const newUptime = (99.5 + Math.random() * 0.5).toFixed(1);
+            const newResponseTime = Math.floor(80 + Math.random() * 100);
+
+            animateProgressBar('.cpu-progress', newCpuLoad);
+            cpuLoad.textContent = `${newCpuLoad}%`;
+
+            animateProgressBar('.memory-progress', newMemoryUsage);
+            memoryUsage.textContent = `${newMemoryUsage}%`;
+
+            uptime.textContent = `${newUptime}%`;
+            responseTime.textContent = `${newResponseTime}ms`;
+        }
+
+        function animateCounter(element, start, end, duration) {
+            const range = end - start;
+            const increment = end > start ? 1 : -1;
+            const stepTime = Math.abs(Math.floor(duration / range));
+            let current = start;
+
+            const timer = setInterval(() => {
+                current += increment;
+                element.textContent = current;
+
+                if (current === end) {
+                    clearInterval(timer);
+                }
+            }, stepTime);
+        }
+
+        function animateProgressBar(selector, newWidth) {
+            const progressBar = document.querySelector(selector);
+            progressBar.style.width = `${newWidth}%`;
+        }
+
+        function updateLastUpdateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('ru-RU', {hour: '2-digit', minute: '2-digit'});
+            lastUpdate.textContent = `сегодня в ${timeString}`;
+        }
+
+        function resetSequence() {
+            currentStep = 0;
+            clickCount = 0;
+
+            timeButtons.forEach(btn => btn.classList.remove('active'));
+            timeButtons[0].classList.add('active');
+            currentTimezone = 'system';
+            updateTime();
+
+            taskError.style.display = 'block';
+            setTimeout(() => {
+                taskError.style.display = 'none';
+            }, 3000);
+        }
+
+        function nextStep() {
+            currentStep++;
+        }
+
+        function showTask(stepIndex) {
+            const task = tasks[stepIndex];
+
+            modalIcon.className = `fas ${task.icon}`;
+            modalSubject.textContent = task.subject;
+            problemText.textContent = task.text;
+            problemEquation.textContent = task.equation;
+            problemHint.textContent = task.hint;
+            taskAnswer.value = '';
+            taskError.style.display = 'none';
+
+            taskModal.style.display = 'flex';
+            taskAnswer.focus();
+        }
+
+        function checkAnswer(userAnswer, correctAnswer) {
+            const normalizedUserAnswer = userAnswer.trim().toLowerCase();
+            const normalizedCorrectAnswer = correctAnswer.trim().toLowerCase();
+
+            if (currentStep === 4) {
+                const userNum = parseFloat(normalizedUserAnswer);
+                const correctNum = parseFloat(normalizedCorrectAnswer);
+
+                if (!isNaN(userNum) && !isNaN(correctNum)) {
+                    return Math.abs(userNum - correctNum) < 0.1;
+                }
+            }
+
+            return normalizedUserAnswer === normalizedCorrectAnswer;
+        }
+
+        function showPassword() {
+            rebusPassword.textContent = targetPassword;
+            passwordModal.style.display = 'flex';
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateTime();
+
+            setInterval(updateTime, 1000);
+
+            updateOnlineStats();
+            updateServerStats();
+            updateLastUpdateTime();
+
+            timeButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    timeButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    currentTimezone = button.dataset.timezone;
+                    updateTime();
+                });
+            });
+
+            refreshTimeBtn.addEventListener('click', () => {
+                updateTime();
+                refreshTimeBtn.innerHTML = '<i class="fas fa-check"></i> Обновлено';
+                setTimeout(() => {
+                    refreshTimeBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Обновить';
+                }, 2000);
+            });
+
+            refreshOnlineBtn.addEventListener('click', () => {
+                updateOnlineStats();
+                refreshOnlineBtn.innerHTML = '<i class="fas fa-check"></i> Обновлено';
+                setTimeout(() => {
+                    refreshOnlineBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Обновить';
+                }, 2000);
+                updateLastUpdateTime();
+            });
+
+            refreshServerBtn.addEventListener('click', () => {
+                updateServerStats();
+                refreshServerBtn.innerHTML = '<i class="fas fa-check"></i> Обновлено';
+                setTimeout(() => {
+                    refreshServerBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Обновить';
+                }, 2000);
+                updateLastUpdateTime();
+            });
+
+            activity1.addEventListener('click', () => {
+                if (currentStep === 0) {
+                    clickCount++;
+
+                    if (clickCount === requiredClicks) {
+                        showTask(0);
+                    }
+                } else {
+                    resetSequence();
+                }
+            });
+
+            secretTrigger1.addEventListener('click', () => {
+                if (currentStep === 1) {
+                    showTask(1);
+                } else {
+                    resetSequence();
+                }
+            });
+
+            secretTrigger2.addEventListener('click', () => {
+                if (currentStep === 2) {
+                    showTask(2);
+                } else {
+                    resetSequence();
+                }
+            });
+
+            moscowTimeBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+
+                if (currentStep === 3) {
+                    e.preventDefault();
+                    showTask(3);
+                    return false;
+                } else if (currentStep !== 0) {
+                    resetSequence();
+                }
+                return true;
+            });
+
+            tokyoTimeBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+
+                if (currentStep === 4) {
+                    e.preventDefault();
+                    showTask(4);
+                    return false;
+                } else if (currentStep !== 0) {
+                    resetSequence();
+                }
+                return true;
+            });
+
+            adminAccessText.addEventListener('click', () => {
+                if (currentStep === 5) {
+                    showPassword();
+                } else if (currentStep !== 0) {
+                    resetSequence();
+                }
+            });
+
+            submitTaskAnswer.addEventListener('click', () => {
+                const userAnswer = taskAnswer.value;
+                const correctAnswer = tasks[currentStep].answer;
+
+                if (checkAnswer(userAnswer, correctAnswer)) {
+                    taskModal.style.display = 'none';
+                    nextStep();
+
+                    if (currentStep === 5) {
+                        adminAccessText.style.color = '#4cd964';
+                        adminAccessText.style.fontWeight = 'bold';
+                        adminAccessText.style.textShadow = '0 0 10px rgba(76, 217, 100, 0.5)';
+                    }
+                } else {
+                    resetSequence();
+                    taskModal.style.display = 'none';
+                }
+            });
+
+            taskAnswer.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    submitTaskAnswer.click();
+                }
+            });
+
+            closeTaskModal.addEventListener('click', () => {
+                taskModal.style.display = 'none';
+                resetSequence();
+            });
+
+            closePasswordModal.addEventListener('click', () => {
+                passwordModal.style.display = 'none';
+            });
+
+            copyPasswordBtn.addEventListener('click', () => {
+                navigator.clipboard.writeText(targetPassword).then(() => {
+                    copyPasswordBtn.innerHTML = '<i class="fas fa-check"></i> Скопировано!';
+                    setTimeout(() => {
+                        copyPasswordBtn.innerHTML = '<i class="fas fa-copy"></i> Копировать пароль';
+                    }, 2000);
+                });
+            });
+
+            taskModal.addEventListener('click', (e) => {
+                if (e.target === taskModal) {
+                    taskModal.style.display = 'none';
+                    resetSequence();
+                }
+            });
+
+            passwordModal.addEventListener('click', (e) => {
+                if (e.target === passwordModal) {
+                    passwordModal.style.display = 'none';
+                }
+            });
+
+            setInterval(() => {
+                updateOnlineStats();
+                updateServerStats();
+            }, 30000);
+        });
+    </script>
+</body>
+</html>
