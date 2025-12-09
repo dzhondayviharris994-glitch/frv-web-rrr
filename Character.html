@@ -610,12 +610,18 @@ a, button {
   <div class="modal-content">
     <div class="modal-close" id="closeModal">&times;</div>
     <h2 id="characterName">Имя Персонажа</h2>
+    <p id="characterFIO">ФИО:</p>
     <p id="characterKOB">Краткое описание внешности персонажа...</p>
     <p id="characterDesc">Описание персонажа...</p>
   </div>
 </div>
 
 <script>
+// Глобальные переменные для навигации
+let currentFaction = '';
+let currentCharacterIndex = 0;
+let currentCharactersList = [];
+
 // Создание парящих частиц
 function createParticles() {
   const particlesContainer = document.getElementById('particles');
@@ -643,39 +649,40 @@ function createParticles() {
 
 const data = {
   objects: [
-    { name: "Демиург(Объект 1)", KOB: "КОВ:", description: "Описание:" },
-    { name: "", KOB: "КОВ:", description: "Описание:" },
-    { name: "", KOB: "КОВ:", description: "Описание:" },
-    { name: "", KOB: "КОВ:", description: "Описание:" },
-    { name: "", KOB: "КОВ:", description: "Описание:" },
-    { name: "", KOB: "КОВ:", description: "Описание:" },
+    { name: "Демиург(Объект 1)", FIO: "ФИО:", KOB: "КОВ:", description: "Описание:" },
+    { name: "Кто?(Объект 2)", FIO: "ФИО:", KOB: "КОВ:", description: "Описание:" },
+    { name: "Товайрайто Мангецу Тихоновна(Объект 3)", FIO: "ФИО:", KOB: "КОВ:", description: "Описание:" },
+    { name: "Кто?(Объект 4)", FIO: "ФИО:", KOB: "КОВ:", description: "Описание:" },
+    { name: "Ходока(Объект 5)", FIO: "ФИО:", KOB: "КОВ:", description: "Описание:" },
+    { name: "(Объект 6)", FIO: "ФИО:", KOB: "КОВ:", description: "Описание:" },
   ],
   humans: [
-    { name: "", KOB: "КОВ:", description: "Описание:" },
-    { name: "", KOB: "КОВ:", description: "Описание:" },
+    { name: "", FIO: "ФИО:", KOB: "КОВ:", description: "Описание:" },
+    { name: "Винер Аксиома Денисовна", FIO: "ФИО:", KOB: "КОВ:", description: "Описание:" },
   ],
   orgN: [
-    { name: "", KOB: "КОВ:", description: "Описание:" },
-    { name: "", KOB: "КОВ:", description: "Описание:" },
+    { name: "КТО КТО?", FIO: "ФИО:", KOB: "КОВ:", description: "Описание:" },
+    { name: "ЧЕГО?", FIO: "ФИО:", KOB: "КОВ:", description: "Описание:" },
   ],
   orgA: [
-    { name: "", KOB: "КОВ:", description: "Описание:" },
-    { name: "", KOB: "КОВ:", description: "Описание:" },
+    { name: "Основатель", FIO: "ФИО:", KOB: "КОВ:", description: "Описание:" },
+    { name: "Аферта", FIO: "ФИО:", KOB: "КОВ:", description: "Описание:" },
   ],
   orgDNA: [
-    { name: "", KOB: "КОВ:", description: "Описание:" },
-    { name: "", KOB: "КОВ:", description: "Описание:" },
+    { name: "Мангецу(Директор)", FIO: "ФИО:", KOB: "КОВ:", description: "Описание:" },
+    { name: "Перси", FIO: "ФИО:", KOB: "КОВ:", description: "Описание:" },
   ],
   abs: [
-    { name: "", KOB: "КОВ:", description: "Описание:" },
-    { name: "", KOB: "КОВ:", description: "Описание:" },
-    { name: "", KOB: "КОВ:", description: "Описание:" },
+    { name: "(Начало)", FIO: "ФИО:", KOB: "КОВ:", description: "Описание:" },
+    { name: "(Идеал)", FIO: "ФИО:", KOB: "КОВ:", description: "Описание:" },
+    { name: "(Конец)", FIO: "ФИО:", KOB: "КОВ:", description: "Описание:" },
   ]
 };
 
 const container = document.getElementById('charactersContainer');
 const modal = document.getElementById('characterModal');
 const modalName = document.getElementById('characterName');
+const modalFIO = document.getElementById('characterFIO');
 const modalKOB = document.getElementById('characterKOB');
 const modalDesc = document.getElementById('characterDesc');
 const closeModalBtn = document.getElementById('closeModal');
@@ -759,15 +766,45 @@ document.querySelectorAll('.menu button').forEach(function(btn) {
 showCharacters('objects');
 
 function showCharacterDetails(character) {
+  const faction = document.querySelector('.menu button.active').getAttribute('data-faction');
+  currentFaction = faction;
+
+  // Фильтруем только заполненных персонажей
+  currentCharactersList = data[faction].filter(p => p.name.trim() !== '');
+  currentCharacterIndex = currentCharactersList.findIndex(p => p.name === character.name);
+
   modalName.textContent = character.name;
+  modalFIO.textContent = character.FIO;
   modalKOB.textContent = character.KOB;
   modalDesc.textContent = character.description;
   modal.classList.add('active');
 }
 
+// Навигация по персонажам
+function navigateCharacter(direction) {
+  if (currentCharactersList.length <= 1) return;
+
+  currentCharacterIndex = (currentCharacterIndex + direction + currentCharactersList.length) % currentCharactersList.length;
+  const character = currentCharactersList[currentCharacterIndex];
+
+  modalName.textContent = character.name;
+  modalFIO.textContent = character.FIO;
+  modalKOB.textContent = character.KOB;
+  modalDesc.textContent = character.description;
+}
+
+// Обработка нажатий клавиш
 document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape' && modal.classList.contains('active')) {
-    modal.classList.remove('active');
+  if (modal.classList.contains('active')) {
+    if (e.key === 'Escape') {
+      modal.classList.remove('active');
+    } else if (e.key === 'ArrowLeft') {
+      navigateCharacter(-1);
+      e.preventDefault();
+    } else if (e.key === 'ArrowRight') {
+      navigateCharacter(1);
+      e.preventDefault();
+    }
   }
 });
 
