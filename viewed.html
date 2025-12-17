@@ -1205,18 +1205,22 @@
     const searchInput = document.getElementById('searchInput');
     const searchResults = document.getElementById('searchResults');
     const adminButtonContainer = document.getElementById('adminButtonContainer');
-    let allTitleCards = [];
 
-    // Собираем все карточки для поиска
-    function collectAllTitles() {
-      allTitleCards = document.querySelectorAll('.title-card');
+    let currentSearchTerm = ''; // Храним текущий поисковый запрос
+
+    // Функция для получения всех видимых карточек в активной категории
+    function getActiveCategoryCards() {
+      const activeSection = document.querySelector('.content-section.active');
+      return activeSection.querySelectorAll('.title-card');
     }
 
     // Функция поиска
     function performSearch(searchTerm) {
+      const activeCards = getActiveCategoryCards();
+
       if (searchTerm.length < 2) {
         // Показываем все карточки, если поисковый запрос короткий
-        allTitleCards.forEach(card => {
+        activeCards.forEach(card => {
           card.classList.remove('hidden');
           card.classList.add('visible');
         });
@@ -1227,7 +1231,7 @@
       const lowerSearchTerm = searchTerm.toLowerCase();
       let foundCount = 0;
 
-      allTitleCards.forEach(card => {
+      activeCards.forEach(card => {
         const titleText = card.querySelector('.title-name').textContent.toLowerCase();
 
         if (titleText.includes(lowerSearchTerm)) {
@@ -1252,27 +1256,28 @@
 
     // Обработчик ввода в поисковую строку
     searchInput.addEventListener('input', function() {
-      const searchTerm = this.value;
+      currentSearchTerm = this.value;
 
       // Проверка на секретную команду
-      if (searchTerm.toLowerCase() === 'showadmin0') {
+      if (currentSearchTerm.toLowerCase() === 'showadmin0') {
         adminButtonContainer.classList.add('show');
         this.value = '';
+        currentSearchTerm = '';
         searchResults.textContent = '';
         searchResults.classList.remove('show');
 
-        // Показываем все карточки
-        allTitleCards.forEach(card => {
+        // Показываем все карточки в активной категории
+        const activeCards = getActiveCategoryCards();
+        activeCards.forEach(card => {
           card.classList.remove('hidden');
           card.classList.add('visible');
         });
       } else {
         adminButtonContainer.classList.remove('show');
-        performSearch(searchTerm);
+        performSearch(currentSearchTerm);
       }
     });
 
-    // Обработчики для табов категорий
     categoryTabs.forEach(tab => {
       tab.addEventListener('click', function() {
         const category = this.dataset.category;
@@ -1290,23 +1295,28 @@
         // Показываем нужную секцию
         document.getElementById(category).classList.add('active');
 
-        // Сбрасываем поиск при переключении категории
-        searchInput.value = '';
-        searchResults.classList.remove('show');
-
-        // Скрываем кнопку администрации
-        adminButtonContainer.classList.remove('show');
-
-        // Показываем все карточки в активной категории
-        allTitleCards.forEach(card => {
-          card.classList.remove('hidden');
-          card.classList.add('visible');
-        });
+        // Не сбрасываем поисковую строку, сохраняем текст
+        // Выполняем поиск снова, если есть активный запрос
+        if (currentSearchTerm && currentSearchTerm !== 'showadmin0') {
+          performSearch(currentSearchTerm);
+        } else {
+          // Если поискового запроса нет, показываем все карточки
+          const activeCards = getActiveCategoryCards();
+          activeCards.forEach(card => {
+            card.classList.remove('hidden');
+            card.classList.add('visible');
+          });
+          searchResults.classList.remove('show');
+        }
       });
     });
 
     // Инициализация
-    collectAllTitles();
+    // Начинаем с пустого поиска и показываем все карточки в активной категории
+    const initialActiveCards = getActiveCategoryCards();
+    initialActiveCards.forEach(card => {
+      card.classList.add('visible');
+    });
   });
 </script>
 
