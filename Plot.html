@@ -20,12 +20,15 @@
     --accent-purple: #8b5cf6;
     --accent-blue: #3b82f6;
     --accent-pink: #ec4899;
+    --accent-red: #ef4444;
+    --accent-yellow: #f59e0b;
     --text-primary: #f3f4f6;
     --text-secondary: #d1d5db;
     --text-muted: #9ca3af;
     --border: #2d2d42;
     --shadow: rgba(0, 0, 0, 0.4);
     --gradient: linear-gradient(135deg, #8b5cf6, #3b82f6, #ec4899);
+    --warning-gradient: linear-gradient(135deg, #f59e0b, #ef4444);
   }
 
   body {
@@ -36,6 +39,71 @@
     min-height: 100vh;
     overflow-x: hidden;
     position: relative;
+  }
+
+  /* Упрощённое модальное окно */
+  .warning-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    opacity: 0;
+    animation: fadeIn 0.3s ease-out forwards;
+  }
+
+  .warning-content {
+    background: var(--bg-card);
+    border-radius: 12px;
+    padding: 2rem;
+    max-width: 500px;
+    width: 90%;
+    border: 1px solid var(--accent-yellow);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .warning-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--accent-yellow);
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+
+  .warning-text {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+
+  .warning-button {
+    display: block;
+    width: 100%;
+    padding: 0.875rem;
+    background: var(--accent-yellow);
+    color: #000;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .warning-button:hover {
+    background: #fbbf24;
   }
 
   /* Градиентный фон */
@@ -51,12 +119,6 @@
       radial-gradient(circle at 90% 80%, rgba(59, 130, 246, 0.05) 0%, transparent 40%),
       radial-gradient(circle at 50% 50%, rgba(236, 72, 153, 0.03) 0%, transparent 60%),
       var(--bg-primary);
-    animation: gradientShift 20s ease infinite;
-  }
-
-  @keyframes gradientShift {
-    0%, 100% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
   }
 
   /* Текстура шума */
@@ -357,6 +419,14 @@
     }
   }
 
+  /* Специальные эффекты для текста */
+  .highlight {
+    background: linear-gradient(120deg, rgba(139, 92, 246, 0.2), rgba(59, 130, 246, 0.2));
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-weight: 500;
+  }
+
   /* Адаптивность */
   @media (max-width: 1024px) {
     .main-container {
@@ -386,6 +456,14 @@
     .chapters-list {
       max-height: 400px;
     }
+
+    .warning-content {
+      padding: 1.5rem;
+    }
+
+    .warning-title {
+      font-size: 1.5rem;
+    }
   }
 
   @media (max-width: 480px) {
@@ -402,46 +480,22 @@
       gap: 0.5rem;
     }
   }
-
-  /* Специальные эффекты для текста */
-  .highlight {
-    background: linear-gradient(120deg, rgba(139, 92, 246, 0.2), rgba(59, 130, 246, 0.2));
-    padding: 0.2rem 0.5rem;
-    border-radius: 4px;
-    font-weight: 500;
-  }
-
-  /* Индикатор загрузки */
-  .loader {
-    display: none;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 1001;
-  }
-
-  .loader.active {
-    display: block;
-  }
-
-  .spinner {
-    width: 50px;
-    height: 50px;
-    border: 3px solid transparent;
-    border-top: 3px solid var(--accent-purple);
-    border-right: 3px solid var(--accent-blue);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-  }
-
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
 </style>
 </head>
 <body>
+
+<!-- Упрощённое модальное окно -->
+<div class="warning-modal" id="warningModal">
+  <div class="warning-content">
+    <h2 class="warning-title">ВНИМАНИЕ!</h2>
+    <div class="warning-text">
+      Это первоначальная версия произведения. В будущем оно будет перерисовано в виде манги и доработано.
+      <br><br>
+      <strong>Сейчас вы читаете сырой текст с минимальным редактированием.</strong>
+    </div>
+    <button class="warning-button" id="warningButton">Понятно, продолжить</button>
+  </div>
+</div>
 
 <!-- Градиентный фон -->
 <div class="gradient-bg"></div>
@@ -454,11 +508,6 @@
 
 <!-- Плавающие элементы -->
 <div class="floating-elements" id="floatingElements"></div>
-
-<!-- Индикатор загрузки -->
-<div class="loader" id="loader">
-  <div class="spinner"></div>
-</div>
 
 <!-- Заголовок -->
 <header>
@@ -479,7 +528,7 @@
   </aside>
 
   <!-- Основной контент -->
-  <main class="content-area">
+<main class="content-area">
     <div class="chapter-header">
       <h1 class="chapter-title" id="chapterTitle">Загрузка...</h1>
       <div class="chapter-meta">
@@ -510,6 +559,31 @@
 </footer>
 
 <script>
+// Модальное окно с предупреждением
+const warningModal = document.getElementById('warningModal');
+const warningButton = document.getElementById('warningButton');
+
+// Показываем модальное окно при загрузке
+document.addEventListener('DOMContentLoaded', () => {
+  const hasSeenWarning = localStorage.getItem('hasSeenWarning');
+
+  if (!hasSeenWarning) {
+    warningModal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
+});
+
+// Закрытие модального окна
+warningButton.addEventListener('click', () => {
+  warningModal.style.opacity = '0';
+  document.body.style.overflow = 'auto';
+  localStorage.setItem('hasSeenWarning', 'true');
+
+  setTimeout(() => {
+    warningModal.style.display = 'none';
+  }, 300);
+});
+
 // Создание плавающих элементов
 function createFloatingElements() {
   const container = document.getElementById('floatingElements');
@@ -536,17 +610,109 @@ function createFloatingElements() {
   }
 }
 
-// Данные глав
+// Данные глав (исправленный текст)
 const chapters = {
   1: {
-    title: "Н..начало?",
-    content: `
+    title: "Начало?",
+    content: `<p>Девушка прогуливалась по ночному парку, уткнувшись в телефон. На экране был открыт мессенджер, а в чате под названием "Папа" висело сообщение от 07.09.2024: «Возвращайся домой, дочурка. Я поговорил с мамой, она успокоится». Девушка устало вздохнула, посмотрела на время — было 21:26, сегодняшняя дата — 13.06.2025 — затем заблокировала экран и сунула телефон в карман пуховика.</p>
 
-    `,
-    date: "скоро"
+    <p>Вдруг она заметила коробку от холодильника, лежащую горизонтально и... шевелящуюся. Подойдя ближе, она наклонилась, чтобы разглядеть, кто в ней брыкается. Это был мальчик лет восьми, небольшого роста, с пепельными волосами, одетый в шорты и футболку.</p>
+
+    <p><span class="highlight">Девушка подумала:</span> «Это... явно не моя проблема» — и сделала шаг вперёд.</p>
+
+    <p>Пройдя пару метров, она остановилась, обернулась и вслух промолвила: «Ммм... ладно! Я заберу его к себе. А то ещё погибнет тут на улице».</p>
+
+    <p>Она взвалила его маленькую тушку себе на спину и понесла в свою квартиру.</p>
+
+    <p><strong>ㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤВ квартире</strong></p>
+
+    <p>Девушка положила мальчика на свою двуспальную кровать и ушла в магазин, ведь в холодильнике не было ничего, кроме вишнёвого сока и мяса.</p>
+
+    <p>Спустя двадцать минут мальчик открыл глаза и огляделся.</p>
+
+    <p><span class="highlight">Мальчик (в полудрёме):</span> «А...? Мягко... Где я?»</p>
+
+    <p>Он поднялся с тёплой кровати и осмотрелся. Удивления не было, но он чувствовал благодарность судьбе за такую удачу. Первым делом он нашёл ванную, где сразу помылся. Выйдя из душа в той же одежде, но уже чистый, он направился на кухню, открыл холодильник и увидел пять литровых коробок вишнёвого сока.</p>
+
+    <p>Мальчик взял самую правую — из неё уже явно отпивали — открыл её и сделал несколько глотков. В этот момент входная дверь открылась: девушка вошла в квартиру и, увидев включённый на кухне свет, быстро прошмыгнула туда с двумя полными пакетами.</p>
+
+    <p><span class="highlight">Девушка:</span> «Привет! Вижу, ты проснулся. Я — Йумильяна Денисовна, можешь звать меня просто Юми».</p>
+
+    <p>Мальчик поставил коробку с соком на прозрачный стол. Йумильяна, в свою очередь, поставила пакеты и, вынимая продукты, продолжила:</p>
+
+    <p><span class="highlight">Йумильяна:</span> «А тебя как зовут?»</p>
+
+    <p><span class="highlight">Мальчик:</span> «Ходока».</p>
+
+    <p><span class="highlight">Йумильяна:</span> «Приятно познакомиться, Ходока. А полное имя есть?»</p>
+
+    <p><span class="highlight">Ходока:</span> «Нет».</p>
+
+    <p><span class="highlight">Йумильяна:</span> «Так даже легче. Тем более, не думаю, что в наших краях найдётся кто-то с таким же именем».</p>
+
+    <p><span class="highlight">Ходока:</span> «Спасибо вам за гостеприимство... Юмилия?»</p>
+
+    <p><span class="highlight">Йумильяна:</span> «Йумильяна!»</p>
+
+    <p><span class="highlight">Ходока:</span> «Простите. Спасибо вам, Йумильяна».</p>
+
+    <p><span class="highlight">Йумильяна:</span> «Называй просто Юми. Слушай, Ходока, расскажи-ка, почему ты ночевал на улице?»</p>
+
+    <p><span class="highlight">Ходока:</span> «Меня выгнали из квартиры. Опять».</p>
+
+    <p><span class="highlight">Йумильяна:</span> «Опять?»</p>
+
+    <p><span class="highlight">Ходока:</span> «Просто... я не самый желанный гость. Я паразитирую там, где долго нет людей — в заброшенных домах, пока хозяева в командировках. И когда они приезжают, я либо ухожу до того, как меня заметят, либо меня обнаруживают спящим и... приходится убегать».</p>
+
+    <p><span class="highlight">Йумильяна:</span> «А почему ты слоняешься по домам?»</p>
+
+    <p><span class="highlight">Ходока:</span> «Я... сирота, бездомный сирота. Я бы мог убить владельца и оставить себе место проживания, но... понимаю, что так будет сложнее. И потом, я не могу понять, как действуют мои способности, поэтому в крайнем случае не смогу противостоять войску. Ой, прости, совсем заболтался».</p>
+
+    <p>Йумильяна в это время уже разогрела замороженные полуфабрикаты и раскладывала их по тарелкам.</p>
+
+    <p><span class="highlight">Йумильяна:</span> «А как ты питался?»</p>
+
+    <p><span class="highlight">Ходока:</span> «С едой было легче. Сначала сметал всё, что было в холодильнике хозяев дома, потом крал из магазинов. С моей способностью это проще, чем устроиться на работу в 14 лет».</p>
+
+    <p><span class="highlight">Йумильяна:</span> «Понятненько» — протянула Юми и медленным движением отправила в рот перегретый полуфабрикат.</p>
+
+    <p>Ходока потянулся за вишнёвым соком, но коробка внезапно соскользнула со стола. Даже не повернув головы, он едва заметным движением пальца остановил её в воздухе, будто подхватив невидимой перчаткой, и мягко поставил на стол.</p>
+
+    <p>Йумильяна подняла бровь, но ничего не сказала — лишь чуть внимательнее посмотрела на него. Она сама выросла в семье, где «странности» были обычным делом.</p>
+
+    <p>Спустя пару минут тихого поедания Юми, доев, нарушила тишину:</p>
+
+    <p><span class="highlight">Йумильяна:</span> «Поиграем в карты?»</p>
+
+    <p><span class="highlight">Ходока:</span> «Дурак?»</p>
+
+    <p><span class="highlight">Йумильяна:</span> «Дурак».</p>
+
+    <p><span class="highlight">Ходока:</span> «Раздавай».</p>
+
+    <p>Она раздала карты. Ходока взял свою стопку, и его пальцы на секунду замерли — карты будто сами ложились в нужном порядке. Карты в его руке были будто подчёркнуты едва заметной чёрной обводкой.</p>
+
+    <p>Йумильяна заметила. Она видела, как масть на одной из карт на мгновение сменилась с червей на пики, а потом вернулась обратно. Она не испугалась — скорее, с интересом наблюдала.</p>
+
+    <p><span class="highlight">Йумильяна:</span> «Жульничаешь?» — сказала Юми, после чего походила четырьмя дамами.</p>
+
+    <p><span class="highlight">Ходока:</span> «Ни в коем случае» — сказал Ходока, отвечая четырьмя королями.</p>
+
+    <p>Спустя двадцать минут игры, в ходе которой Ходока выиграл три партии из четырёх, оба чувствовали сонливость.</p>
+
+    <p><span class="highlight">Йумильяна:</span> «Ух, а ты сильно играешь. Я устала».</p>
+
+    <p>Она посмотрела на часы — до полуночи оставалось двадцать минут. За окном давно стемнело, а усталость давала о себе знать.</p>
+
+    <p>«Ложись спать», — сказала Юми, указывая на свою двуспальную кровать. — «Недаром я настояла на большой кровати».</p>
+
+    <p>Ходока кивнул. Он чувствовал странное спокойствие — впервые за долгое время у него было безопасное место для ночлега.</p>
+
+    <p>Йумильяна увалилась на кровать и сразу уснула. Ходока, в свою очередь, поразмыслив над всей ситуацией, с лёгкой улыбкой последовал за Юми в царствие Морфея.</p>`,
+    date: "04.01.2025"
   },
   2: {
-    title: "",
+    title: "Продолжение следует...",
     content: `<p>Содержание главы скоро будет добавлено...</p>`,
     date: "Скоро"
   },
@@ -640,7 +806,6 @@ const chapters = {
     content: `<p>Содержание главы скоро будет добавлено...</p>`,
     date: "Скоро"
   }
-
 };
 
 // Элементы DOM
@@ -649,11 +814,10 @@ const chapterTitle = document.getElementById('chapterTitle');
 const chapterNumber = document.getElementById('chapterNumber');
 const chapterDate = document.getElementById('chapterDate');
 const chapterContent = document.getElementById('chapterContent');
-const loader = document.getElementById('loader');
 
 // Создание навигации по главам
 function createChapterNavigation() {
-  for (let i = 1; i <= 5; i++) {
+  for (let i = 1; i <= 20; i++) {
     const chapterItem = document.createElement('div');
     chapterItem.className = 'chapter-item';
     chapterItem.dataset.chapter = i;
@@ -670,40 +834,34 @@ function createChapterNavigation() {
 
 // Загрузка главы
 function loadChapter(chapterId) {
-  // Показать загрузчик
-  loader.classList.add('active');
-
   // Снять активный класс со всех глав
   document.querySelectorAll('.chapter-item').forEach(item => {
     item.classList.remove('active');
   });
 
   // Установить активный класс текущей главе
-  document.querySelector(`.chapter-item[data-chapter="${chapterId}"]`).classList.add('active');
+  const currentChapter = document.querySelector(`.chapter-item[data-chapter="${chapterId}"]`);
+  if (currentChapter) {
+    currentChapter.classList.add('active');
+  }
 
-  // Имитация загрузки (в реальном приложении здесь был бы запрос к серверу)
-  setTimeout(() => {
-    const chapter = chapters[chapterId];
+  const chapter = chapters[chapterId];
 
-    if (chapter) {
-      chapterTitle.textContent = chapter.title;
-      chapterNumber.textContent = `Глава ${chapterId}`;
-      chapterDate.textContent = `Дата публикации: ${chapter.date}`;
-      chapterContent.innerHTML = chapter.content;
-    } else {
-      chapterTitle.textContent = "Глава не найдена";
-      chapterContent.innerHTML = `<p>Содержание этой главы ещё не написано.</p>`;
-    }
+  if (chapter) {
+    chapterTitle.textContent = chapter.title || `Глава ${chapterId}`;
+    chapterNumber.textContent = `Глава ${chapterId}`;
+    chapterDate.textContent = `Дата публикации: ${chapter.date}`;
+    chapterContent.innerHTML = chapter.content;
+  } else {
+    chapterTitle.textContent = "Глава не найдена";
+    chapterContent.innerHTML = `<p>Содержание этой главы ещё не написано.</p>`;
+  }
 
-    // Скрыть загрузчик
-    loader.classList.remove('active');
-
-    // Прокрутить к началу контента
-    document.querySelector('.content-area').scrollIntoView({
-      behavior: 'smooth',
-      block: 'start'
-    });
-  }, 500);
+  // Прокрутить к началу контента
+  document.querySelector('.content-area').scrollIntoView({
+    behavior: 'smooth',
+    block: 'start'
+  });
 }
 
 // Инициализация при загрузке страницы
@@ -711,42 +869,7 @@ window.addEventListener('load', () => {
   createFloatingElements();
   createChapterNavigation();
   loadChapter(1);
-
-  // Добавить звуковой эффект при переключении глав
-  const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-
-  document.querySelectorAll('.chapter-item').forEach(item => {
-    item.addEventListener('click', function() {
-      // Простой звуковой эффект
-      try {
-        const oscillator = audioContext.createOscillator();
-        const gainNode = audioContext.createGain();
-
-        oscillator.connect(gainNode);
-        gainNode.connect(audioContext.destination);
-
-        oscillator.frequency.value = 523.25; // Нота C5
-        oscillator.type = 'sine';
-
-        gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
-
-        oscillator.start(audioContext.currentTime);
-        oscillator.stop(audioContext.currentTime + 0.1);
-      } catch (e) {
-        // Игнорировать ошибки аудио
-      }
-    });
-  });
 });
-
-// Активировать аудиоконтекст при первом клике
-document.addEventListener('click', function initAudio() {
-  if (window.audioContext) {
-    window.audioContext.resume();
-  }
-  document.removeEventListener('click', initAudio);
-}, { once: true });
 </script>
 
 </body>
